@@ -18,7 +18,6 @@ Partial Public Class Form1
         ' デザイナで必要な初期化を行う
         Me.New()
         ' 遷移元を保持して、閉じたときに戻すハンドラを登録
-        '_prev は ReadOnly のためここで割り当て（既に New() で初期化済みだが ReadOnly はコンストラクタ内で上書き可）
         Dim fi = Me.GetType().GetField("_prev", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance)
         If fi IsNot Nothing Then
             fi.SetValue(Me, prev)
@@ -89,16 +88,20 @@ Partial Public Class Form1
                     flowRooms.Padding = New Padding(flowRooms.Padding.Left, flowRooms.Padding.Top, flowRooms.Padding.Right, navHeight + 12)
                 End If
 
-                ' bottomNav の上部角を丸く（ランタイム）
+                ' bottomNav の下部角を丸く（ランタイム）
                 If bottomNav.Width > 0 AndAlso bottomNav.Height > 0 Then
-                    Dim r2 As Integer = Math.Min(12, Math.Min(bottomNav.Width \ 10, bottomNav.Height \ 2))
+                    Dim r2 As Integer = Math.Min(24, Math.Min(bottomNav.Width \ 10, bottomNav.Height \ 2))
                     Using gp2 As New GraphicsPath()
                         Dim w2 = bottomNav.Width
                         Dim h2 = bottomNav.Height
-                        gp2.AddArc(0, 0, r2 * 2, r2 * 2, 180, 90)
-                        gp2.AddArc(w2 - r2 * 2, 0, r2 * 2, r2 * 2, 270, 90)
-                        gp2.AddLine(w2, 0, w2, h2)
-                        gp2.AddLine(w2, h2, 0, h2)
+
+                        ' 描画順を変えて下側の角を丸くする
+                        gp2.AddLine(0, 0, w2, 0)                                   ' top edge
+                        gp2.AddLine(w2, 0, w2, h2 - r2 * 2)                       ' right edge
+                        gp2.AddArc(w2 - r2 * 2, h2 - r2 * 2, r2 * 2, r2 * 2, 0, 90) ' bottom-right corner
+                        gp2.AddLine(w2 - r2 * 2, h2, r2, h2)                       ' bottom edge
+                        gp2.AddArc(0, h2 - r2 * 2, r2 * 2, r2 * 2, 90, 90)         ' bottom-left corner
+                        gp2.AddLine(0, h2 - r2 * 2, 0, 0)                          ' left edge
                         gp2.CloseFigure()
                         bottomNav.Region = New Region(gp2)
                     End Using
@@ -108,13 +111,22 @@ Partial Public Class Form1
         End If
     End Sub
 
-    ' カードは今は表示しない（必要なら CreateRoomCard の中身を戻す）
+    ' カードを作成して返す（呼び出し元で幅を調整）
     Private Function CreateRoomCard(title As String, count As String, time As String) As Panel
         Dim card As New Panel()
         card.Size = New System.Drawing.Size(520, 120)
         card.Margin = New Padding(6)
         card.BackColor = System.Drawing.Color.FromArgb(204, 247, 253)
         card.Padding = New Padding(12)
+
+        ' シンプルなラベルを追加して見えるようにする
+        Dim lbl As New Label()
+        lbl.Text = $"{title} — {count} — {time}"
+        lbl.AutoSize = False
+        lbl.Dock = DockStyle.Fill
+        lbl.TextAlign = ContentAlignment.MiddleLeft
+        card.Controls.Add(lbl)
+
         Return card
     End Function
 
@@ -122,10 +134,33 @@ Partial Public Class Form1
         ' 何もしない
     End Sub
 
-    ' btnAdd のクリックでカード追加（要望どおり現時点では何もしない）
+    ' btnAdd のクリックでカード追加：既存をクリアして必ず一枚だけ表示する
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-        ' テスト時に一時的に追加したければコメント解除:
-        ' flowRooms.Controls.Add(CreateRoomCard("テストルーム", "0人", "0:00"))
+        If flowRooms Is Nothing Then
+            Return
+        End If
+
+        flowRooms.SuspendLayout()
+        Try
+            ' 既存カードは削除して一枚だけ表示
+            flowRooms.Controls.Clear()
+
+            Dim card = CreateRoomCard("テストルーム", "0人", "0:00")
+            If card IsNot Nothing Then
+                ' flowRooms の内幅に合わせる（padding を考慮）
+                Dim innerWidth As Integer = flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right
+                If innerWidth > 0 Then
+                    card.Width = Math.Max(0, innerWidth - 4) ' 少し余裕を持たせる
+                End If
+                card.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+
+                flowRooms.Controls.Add(card)
+                card.BringToFront()
+            End If
+        Finally
+            flowRooms.ResumeLayout()
+            flowRooms.Refresh()
+        End Try
     End Sub
 
     Private Sub EnsureHandlers()
@@ -155,7 +190,12 @@ Partial Public Class Form1
 
     End Sub
 
-    Private Sub headerBar_Paint(sender As Object, e As PaintEventArgs) Handles headerBar.Paint
+    ' headerBar 用の空ハンドラ（安全化）
+    Private Sub headerBar_Paint(sender As Object, e As PaintEventArgs)
+        ' 必要なら描画コードを追加
+    End Sub
+
+    Private Sub bottomNav_Paint(sender As Object, e As PaintEventArgs) Handles bottomNav.Paint
 
     End Sub
 End Class
