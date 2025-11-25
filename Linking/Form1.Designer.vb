@@ -1,31 +1,172 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-Partial Class Form1
+Partial Public Class Form1
     Inherits System.Windows.Forms.Form
 
-    'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()>
-    Protected Overrides Sub Dispose(disposing As Boolean)
-        Try
-            If disposing AndAlso components IsNot Nothing Then
-                components.Dispose()
-            End If
-        Finally
-            MyBase.Dispose(disposing)
-        End Try
-    End Sub
-
-    'Required by the Windows Form Designer
     Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.
-    'Do not modify it using the code editor.
+    Friend WithEvents lblScreenTitle As Label
+    Friend WithEvents devicePanel As Panel
+    Friend WithEvents headerBar As Panel
+    Friend WithEvents panelSearch As Panel
+    Friend WithEvents txtSearch As TextBox
+    Friend WithEvents btnAdd As Button
+    Friend WithEvents flowRooms As FlowLayoutPanel
+    Friend WithEvents bottomNav As Panel
+    Friend WithEvents btnNavHome As Button
+    Friend WithEvents btnNavRooms As Button
+    Friend WithEvents btnNavFav As Button
+
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        components = New System.ComponentModel.Container()
+        devicePanel = New Panel()
+        bottomNav = New Panel()
+        btnNavFav = New Button()
+        btnNavRooms = New Button()
+        btnNavHome = New Button()
+        flowRooms = New FlowLayoutPanel()
+        panelSearch = New Panel()
+        txtSearch = New TextBox()
+        btnAdd = New Button()
+        headerBar = New Panel()
+        devicePanel.SuspendLayout()
+        bottomNav.SuspendLayout()
+        panelSearch.SuspendLayout()
+        SuspendLayout()
+        ' 
+        ' devicePanel
+        ' 
+        devicePanel.BackColor = Color.White
+        devicePanel.Controls.Add(bottomNav)
+        devicePanel.Controls.Add(flowRooms)
+        devicePanel.Controls.Add(panelSearch)
+        devicePanel.Controls.Add(headerBar)
+        devicePanel.Location = New Point(16, 48)
+        devicePanel.Name = "devicePanel"
+        devicePanel.Size = New Size(544, 912)
+        devicePanel.TabIndex = 1
+        ' 
+        ' bottomNav
+        ' 
+        bottomNav.BackColor = Color.FromArgb(CByte(10), CByte(102), CByte(204))
+        bottomNav.Controls.Add(btnNavFav)
+        bottomNav.Controls.Add(btnNavRooms)
+        bottomNav.Controls.Add(btnNavHome)
+        bottomNav.Dock = DockStyle.Bottom
+        bottomNav.Location = New Point(0, 848)
+        bottomNav.Name = "bottomNav"
+        bottomNav.Size = New Size(544, 64)
+        bottomNav.TabIndex = 3
+        ' 
+        ' btnNavFav
+        ' 
+        btnNavFav.FlatAppearance.BorderSize = 0
+        btnNavFav.FlatStyle = FlatStyle.Flat
+        btnNavFav.ForeColor = Color.White
+        btnNavFav.Location = New Point(388, 8)
+        btnNavFav.Name = "btnNavFav"
+        btnNavFav.Size = New Size(140, 48)
+        btnNavFav.TabIndex = 2
+        btnNavFav.Text = "Favolite"
+        ' 
+        ' btnNavRooms
+        ' 
+        btnNavRooms.FlatAppearance.BorderSize = 0
+        btnNavRooms.FlatStyle = FlatStyle.Flat
+        btnNavRooms.ForeColor = Color.White
+        btnNavRooms.Location = New Point(212, 8)
+        btnNavRooms.Name = "btnNavRooms"
+        btnNavRooms.Size = New Size(140, 48)
+        btnNavRooms.TabIndex = 1
+        btnNavRooms.Text = "Room"
+        ' 
+        ' btnNavHome
+        ' 
+        btnNavHome.BackColor = Color.FromArgb(CByte(255), CByte(230), CByte(0))
+        btnNavHome.FlatAppearance.BorderSize = 0
+        btnNavHome.FlatStyle = FlatStyle.Flat
+        btnNavHome.Location = New Point(20, 8)
+        btnNavHome.Name = "btnNavHome"
+        btnNavHome.Size = New Size(96, 48)
+        btnNavHome.TabIndex = 0
+        btnNavHome.Text = "Home"
+        btnNavHome.UseVisualStyleBackColor = False
+        ' 
+        ' flowRooms
+        ' 
+        flowRooms.AutoScroll = True
+        flowRooms.Dock = DockStyle.Fill
+        flowRooms.FlowDirection = FlowDirection.TopDown
+        flowRooms.Location = New Point(0, 136)
+        flowRooms.Name = "flowRooms"
+        flowRooms.Padding = New Padding(8)
+        flowRooms.Size = New Size(544, 776)
+        flowRooms.TabIndex = 2
+        flowRooms.WrapContents = False
+        ' 
+        ' panelSearch
+        ' 
+        panelSearch.BackColor = Color.FromArgb(CByte(245), CByte(242), CByte(246))
+        panelSearch.Controls.Add(txtSearch)
+        panelSearch.Controls.Add(btnAdd)
+        panelSearch.Dock = DockStyle.Top
+        panelSearch.Location = New Point(0, 80)
+        panelSearch.Name = "panelSearch"
+        panelSearch.Padding = New Padding(8)
+        panelSearch.Size = New Size(544, 56)
+        panelSearch.TabIndex = 1
+        ' 
+        ' txtSearch
+        ' 
+        txtSearch.BorderStyle = BorderStyle.None
+        txtSearch.Dock = DockStyle.Fill
+        txtSearch.Location = New Point(8, 8)
+        txtSearch.Margin = New Padding(0)
+        txtSearch.Name = "txtSearch"
+        txtSearch.PlaceholderText = "検索"
+        txtSearch.Size = New Size(472, 27)
+        txtSearch.TabIndex = 0
+        ' 
+        ' btnAdd
+        ' 
+        btnAdd.BackColor = Color.FromArgb(CByte(255), CByte(230), CByte(0))
+        btnAdd.Dock = DockStyle.Right
+        btnAdd.FlatAppearance.BorderSize = 0
+        btnAdd.FlatStyle = FlatStyle.Flat
+        btnAdd.Font = New Font("Yu Gothic UI", 12.0F, FontStyle.Bold)
+        btnAdd.Location = New Point(480, 8)
+        btnAdd.Name = "btnAdd"
+        btnAdd.Size = New Size(56, 40)
+        btnAdd.TabIndex = 1
+        btnAdd.Text = "+"
+        btnAdd.UseVisualStyleBackColor = False
+        ' 
+        ' headerBar
+        ' 
+        headerBar.BackColor = Color.FromArgb(CByte(10), CByte(102), CByte(204))
+        headerBar.Dock = DockStyle.Top
+        headerBar.Location = New Point(0, 0)
+        headerBar.Name = "headerBar"
+        headerBar.Size = New Size(544, 80)
+        headerBar.TabIndex = 0
+        ' 
+        ' Form1
+        ' 
+        AutoScaleDimensions = New SizeF(11.0F, 28.0F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(800, 450)
-        Text = "Form1"
+        BackColor = Color.White
+        ClientSize = New Size(576, 1024)
+        Controls.Add(devicePanel)
+        Font = New Font("Yu Gothic UI", 10.0F)
+        FormBorderStyle = FormBorderStyle.None
+        MaximizeBox = False
+        MinimizeBox = False
+        Name = "Form1"
+        StartPosition = FormStartPosition.CenterScreen
+        devicePanel.ResumeLayout(False)
+        bottomNav.ResumeLayout(False)
+        panelSearch.ResumeLayout(False)
+        panelSearch.PerformLayout()
+        ResumeLayout(False)
     End Sub
 
 End Class

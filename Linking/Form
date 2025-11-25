@@ -1,0 +1,275 @@
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+Partial Class Form1
+    Inherits System.Windows.Forms.Form
+
+    'Form overrides dispose to clean up the component list.
+    <System.Diagnostics.DebuggerNonUserCode()>
+    Protected Overrides Sub Dispose(disposing As Boolean)
+        Try
+            If disposing AndAlso components IsNot Nothing Then
+                components.Dispose()
+            End If
+        Finally
+            MyBase.Dispose(disposing)
+        End Try
+    End Sub
+
+    'Required by the Windows Form Designer
+    Private components As System.ComponentModel.IContainer
+
+    Friend WithEvents lblScreenTitle As Label
+    Friend WithEvents panelHeader As Panel
+    Friend WithEvents btnSettings As Button
+    Friend WithEvents btnProfile As Button
+    Friend WithEvents panelSearch As Panel
+    Friend WithEvents txtSearch As TextBox
+    Friend WithEvents btnAdd As Button
+    Friend WithEvents flowRooms As FlowLayoutPanel
+    Friend WithEvents panelBottomNav As Panel
+    Friend WithEvents btnNavHome As Button
+    Friend WithEvents btnNavRooms As Button
+    Friend WithEvents btnNavFav As Button
+
+    <System.Diagnostics.DebuggerStepThrough()>
+    Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
+        Me.lblScreenTitle = New System.Windows.Forms.Label()
+        Me.panelHeader = New System.Windows.Forms.Panel()
+        Me.btnSettings = New System.Windows.Forms.Button()
+        Me.btnProfile = New System.Windows.Forms.Button()
+        Me.panelSearch = New System.Windows.Forms.Panel()
+        Me.txtSearch = New System.Windows.Forms.TextBox()
+        Me.btnAdd = New System.Windows.Forms.Button()
+        Me.flowRooms = New System.Windows.Forms.FlowLayoutPanel()
+        Me.panelBottomNav = New System.Windows.Forms.Panel()
+        Me.btnNavHome = New System.Windows.Forms.Button()
+        Me.btnNavRooms = New System.Windows.Forms.Button()
+        Me.btnNavFav = New System.Windows.Forms.Button()
+        SuspendLayout()
+        ' 
+        ' Form1
+        ' 
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(10.0!, 25.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(34, Byte), Integer), CType(CType(34, Byte), Integer), CType(CType(34, Byte), Integer))
+        Me.ClientSize = New System.Drawing.Size(554, 968)
+        Me.Controls.Add(Me.flowRooms)
+        Me.Controls.Add(Me.panelSearch)
+        Me.Controls.Add(Me.panelHeader)
+        Me.Controls.Add(Me.lblScreenTitle)
+        Me.Controls.Add(Me.panelBottomNav)
+        Me.Font = New System.Drawing.Font("Yu Gothic UI", 10.0!)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Name = "Form1"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        ' 
+        ' lblScreenTitle
+        ' 
+        Me.lblScreenTitle.AutoSize = True
+        Me.lblScreenTitle.ForeColor = System.Drawing.Color.FromArgb(CType(CType(160, Byte), Integer), CType(CType(160, Byte), Integer), CType(CType(160, Byte), Integer))
+        Me.lblScreenTitle.Location = New System.Drawing.Point(12, 12)
+        Me.lblScreenTitle.Name = "lblScreenTitle"
+        Me.lblScreenTitle.Size = New System.Drawing.Size(78, 28)
+        Me.lblScreenTitle.TabIndex = 0
+        Me.lblScreenTitle.Text = "ホーム画面"
+        ' 
+        ' panelHeader
+        ' 
+        Me.panelHeader.BackColor = System.Drawing.Color.FromArgb(CType(CType(10, Byte), Integer), CType(CType(102, Byte), Integer), CType(CType(204, Byte), Integer))
+        Me.panelHeader.Location = New System.Drawing.Point(16, 48)
+        Me.panelHeader.Name = "panelHeader"
+        Me.panelHeader.Size = New System.Drawing.Size(522, 96)
+        Me.panelHeader.TabIndex = 1
+        ' add simple icons/buttons inside header
+        Me.panelHeader.Controls.Add(Me.btnSettings)
+        Me.panelHeader.Controls.Add(Me.btnProfile)
+        ' 
+        ' btnSettings
+        ' 
+        Me.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnSettings.FlatAppearance.BorderSize = 0
+        Me.btnSettings.BackColor = System.Drawing.Color.Transparent
+        Me.btnSettings.ForeColor = System.Drawing.Color.White
+        Me.btnSettings.Location = New System.Drawing.Point(476, 28)
+        Me.btnSettings.Name = "btnSettings"
+        Me.btnSettings.Size = New System.Drawing.Size(32, 32)
+        Me.btnSettings.TabIndex = 1
+        Me.btnSettings.Text = "⚙"
+        Me.btnSettings.UseVisualStyleBackColor = True
+        ' 
+        ' btnProfile
+        ' 
+        Me.btnProfile.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnProfile.FlatAppearance.BorderSize = 0
+        Me.btnProfile.BackColor = System.Drawing.Color.Transparent
+        Me.btnProfile.ForeColor = System.Drawing.Color.White
+        Me.btnProfile.Location = New System.Drawing.Point(16, 28)
+        Me.btnProfile.Name = "btnProfile"
+        Me.btnProfile.Size = New System.Drawing.Size(32, 32)
+        Me.btnProfile.TabIndex = 0
+        Me.btnProfile.Text = "◎"
+        Me.btnProfile.UseVisualStyleBackColor = True
+        ' 
+        ' panelSearch
+        ' 
+        Me.panelSearch.BackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(242, Byte), Integer), CType(CType(246, Byte), Integer))
+        Me.panelSearch.Location = New System.Drawing.Point(16, 154)
+        Me.panelSearch.Name = "panelSearch"
+        Me.panelSearch.Size = New System.Drawing.Size(522, 56)
+        Me.panelSearch.TabIndex = 2
+        Me.panelSearch.Controls.Add(Me.txtSearch)
+        Me.panelSearch.Controls.Add(Me.btnAdd)
+        Me.panelSearch.Padding = New System.Windows.Forms.Padding(8)
+        ' 
+        ' txtSearch
+        ' 
+        Me.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.txtSearch.Font = New System.Drawing.Font("Yu Gothic UI", 10.0!)
+        Me.txtSearch.Location = New System.Drawing.Point(12, 16)
+        Me.txtSearch.Name = "txtSearch"
+        Me.txtSearch.Size = New System.Drawing.Size(420, 27)
+        Me.txtSearch.TabIndex = 0
+        Me.txtSearch.PlaceholderText = "検索"
+        ' 
+        ' btnAdd
+        ' 
+        Me.btnAdd.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(230, Byte), Integer), CType(CType(0, Byte), Integer))
+        Me.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnAdd.FlatAppearance.BorderSize = 0
+        Me.btnAdd.Font = New System.Drawing.Font("Yu Gothic UI", 12.0!, System.Drawing.FontStyle.Bold)
+        Me.btnAdd.Location = New System.Drawing.Point(444, 8)
+        Me.btnAdd.Name = "btnAdd"
+        Me.btnAdd.Size = New System.Drawing.Size(56, 40)
+        Me.btnAdd.TabIndex = 1
+        Me.btnAdd.Text = "+"
+        Me.btnAdd.UseVisualStyleBackColor = False
+        ' 
+        ' flowRooms
+        ' 
+        Me.flowRooms.AutoScroll = True
+        Me.flowRooms.BackColor = System.Drawing.Color.Transparent
+        Me.flowRooms.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.flowRooms.Location = New System.Drawing.Point(16, 220)
+        Me.flowRooms.Name = "flowRooms"
+        Me.flowRooms.Padding = New System.Windows.Forms.Padding(8)
+        Me.flowRooms.Size = New System.Drawing.Size(522, 650)
+        Me.flowRooms.TabIndex = 3
+        Me.flowRooms.WrapContents = False
+        ' add sample cards
+        Me.flowRooms.Controls.Add(CreateRoomCard("満員電車", "32人", "1:00:00"))
+        Me.flowRooms.Controls.Add(CreateRoomCard("卒論の悩み部屋", "13人", "43:12"))
+        Me.flowRooms.Controls.Add(CreateRoomCard("おすすめの回転寿司", "4人", "54:41"))
+        Me.flowRooms.Controls.Add(CreateRoomCard("暇", "112人", "6:03"))
+        ' 
+        ' panelBottomNav
+        ' 
+        Me.panelBottomNav.BackColor = System.Drawing.Color.FromArgb(CType(CType(10, Byte), Integer), CType(CType(102, Byte), Integer), CType(CType(204, Byte), Integer))
+        Me.panelBottomNav.Location = New System.Drawing.Point(16, 882)
+        Me.panelBottomNav.Name = "panelBottomNav"
+        Me.panelBottomNav.Size = New System.Drawing.Size(522, 72)
+        Me.panelBottomNav.TabIndex = 4
+        Me.panelBottomNav.Controls.Add(Me.btnNavHome)
+        Me.panelBottomNav.Controls.Add(Me.btnNavRooms)
+        Me.panelBottomNav.Controls.Add(Me.btnNavFav)
+        ' 
+        ' btnNavHome
+        ' 
+        Me.btnNavHome.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnNavHome.FlatAppearance.BorderSize = 0
+        Me.btnNavHome.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(230, Byte), Integer), CType(CType(0, Byte), Integer))
+        Me.btnNavHome.Location = New System.Drawing.Point(24, 12)
+        Me.btnNavHome.Name = "btnNavHome"
+        Me.btnNavHome.Size = New System.Drawing.Size(88, 48)
+        Me.btnNavHome.TabIndex = 0
+        Me.btnNavHome.Text = "ホーム"
+        Me.btnNavHome.UseVisualStyleBackColor = False
+        ' 
+        ' btnNavRooms
+        ' 
+        Me.btnNavRooms.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnNavRooms.FlatAppearance.BorderSize = 0
+        Me.btnNavRooms.ForeColor = System.Drawing.Color.White
+        Me.btnNavRooms.BackColor = System.Drawing.Color.Transparent
+        Me.btnNavRooms.Location = New System.Drawing.Point(206, 12)
+        Me.btnNavRooms.Name = "btnNavRooms"
+        Me.btnNavRooms.Size = New System.Drawing.Size(88, 48)
+        Me.btnNavRooms.TabIndex = 1
+        Me.btnNavRooms.Text = "ルーム履歴"
+        Me.btnNavRooms.UseVisualStyleBackColor = True
+        ' 
+        ' btnNavFav
+        ' 
+        Me.btnNavFav.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnNavFav.FlatAppearance.BorderSize = 0
+        Me.btnNavFav.ForeColor = System.Drawing.Color.White
+        Me.btnNavFav.BackColor = System.Drawing.Color.Transparent
+        Me.btnNavFav.Location = New System.Drawing.Point(388, 12)
+        Me.btnNavFav.Name = "btnNavFav"
+        Me.btnNavFav.Size = New System.Drawing.Size(88, 48)
+        Me.btnNavFav.TabIndex = 2
+        Me.btnNavFav.Text = "お気に入り"
+        Me.btnNavFav.UseVisualStyleBackColor = True
+        ' 
+        ' Finalize
+        ' 
+        Me.ResumeLayout(False)
+        Me.PerformLayout()
+    End Sub
+
+    ' Helper: create a panel representing a room card (rounded corners + labels)
+    Private Function CreateRoomCard(title As String, count As String, time As String) As Panel
+        Dim card As New Panel()
+        card.Size = New System.Drawing.Size(488, 120)
+        card.Margin = New Padding(6)
+        card.BackColor = System.Drawing.Color.FromArgb(CType(CType(204, Byte), Integer), CType(CType(247, Byte), Integer), CType(CType(253, Byte), Integer))
+        card.Padding = New Padding(12)
+
+        ' Title
+        Dim lblTitle As New Label()
+        lblTitle.AutoSize = False
+        lblTitle.Size = New System.Drawing.Size(440, 28)
+        lblTitle.Text = title
+        lblTitle.ForeColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(30, Byte), Integer), CType(CType(30, Byte), Integer))
+        lblTitle.Location = New System.Drawing.Point(8, 8)
+        lblTitle.Font = New System.Drawing.Font("Yu Gothic UI", 11.0!)
+
+        ' Count (left bottom)
+        Dim lblCount As New Label()
+        lblCount.AutoSize = False
+        lblCount.Size = New System.Drawing.Size(200, 24)
+        lblCount.Text = count
+        lblCount.Location = New System.Drawing.Point(8, 72)
+        lblCount.ForeColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        lblCount.Font = New System.Drawing.Font("Yu Gothic UI", 10.0!)
+
+        ' Time (right bottom)
+        Dim lblTime As New Label()
+        lblTime.AutoSize = False
+        lblTime.Size = New System.Drawing.Size(200, 24)
+        lblTime.Text = time
+        lblTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        lblTime.Location = New System.Drawing.Point(288, 72)
+        lblTime.ForeColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        lblTime.Font = New System.Drawing.Font("Yu Gothic UI", 10.0!)
+
+        card.Controls.Add(lblTitle)
+        card.Controls.Add(lblCount)
+        card.Controls.Add(lblTime)
+
+        ' rounded corners via GraphicsPath -> Region
+        Dim r As Integer = 12
+        Dim w As Integer = card.Width
+        Dim h As Integer = card.Height
+        Using gp As New System.Drawing.Drawing2D.GraphicsPath()
+            gp.AddArc(0, 0, r * 2, r * 2, 180, 90)
+            gp.AddArc(w - r * 2, 0, r * 2, r * 2, 270, 90)
+            gp.AddArc(w - r * 2, h - r * 2, r * 2, r * 2, 0, 90)
+            gp.AddArc(0, h - r * 2, r * 2, r * 2, 90, 90)
+            gp.CloseFigure()
+            card.Region = New Region(gp)
+        End Using
+
+        Return card
+    End Function
+
+End Class
