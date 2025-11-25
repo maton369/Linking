@@ -5,11 +5,24 @@ Partial Public Class Form1
 
     Private ReadOnly _prev As System.Windows.Forms.Form
 
+    ' footerBar を参照する互換エイリアス（デザイナで定義された footerBar を bottomNav として扱う）
+    Private ReadOnly Property bottomNav As Panel
+        Get
+            Return footerBar
+        End Get
+    End Property
+
     ' 既存のデフォルトコンストラクタ（デザイナ用）
     Public Sub New()
         InitializeComponent()
         AddHandler Me.Load, AddressOf Form1_Load
         AddHandler Me.Resize, AddressOf Form1_Resize
+
+        ' bottomNav の Paint ハンドラはコントロールが初期化済みのときのみ登録する
+        If bottomNav IsNot Nothing Then
+            AddHandler bottomNav.Paint, AddressOf bottomNav_Paint
+        End If
+
         _prev = Nothing
     End Sub
 
@@ -61,19 +74,19 @@ Partial Public Class Form1
             End Try
         End If
 
-        ' devicePanel を角丸にする（存在チェック）
-        If devicePanel IsNot Nothing AndAlso devicePanel.Width > 0 AndAlso devicePanel.Height > 0 Then
+        ' フォーム本体を角丸にする（devicePanel を廃止したため Me を使用）
+        If Me.ClientSize.Width > 0 AndAlso Me.ClientSize.Height > 0 Then
             Try
-                Dim r As Integer = Math.Min(24, Math.Min(devicePanel.Width \ 10, devicePanel.Height \ 10))
+                Dim r As Integer = Math.Min(24, Math.Min(Me.ClientSize.Width \ 10, Me.ClientSize.Height \ 10))
                 Using gp As New GraphicsPath()
-                    Dim w = devicePanel.Width
-                    Dim h = devicePanel.Height
+                    Dim w = Me.ClientSize.Width
+                    Dim h = Me.ClientSize.Height
                     gp.AddArc(0, 0, r * 2, r * 2, 180, 90)
                     gp.AddArc(w - r * 2, 0, r * 2, r * 2, 270, 90)
                     gp.AddArc(w - r * 2, h - r * 2, r * 2, r * 2, 0, 90)
                     gp.AddArc(0, h - r * 2, r * 2, r * 2, 90, 90)
                     gp.CloseFigure()
-                    devicePanel.Region = New Region(gp)
+                    Me.Region = New Region(gp)
                 End Using
             Catch ex As Exception
             End Try
@@ -187,7 +200,25 @@ Partial Public Class Form1
     End Sub
 
     Private Sub Form1_Load_1(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' ここは MyBase.Load にハンドルされるエントリポイントです。
+        ' 遷移元（_prev）が渡されている場合、ウィンドウの外形サイズ（Size）と位置（Location）を合わせる。
+        EnsureHandlers()
 
+        Try
+            If _prev IsNot Nothing Then
+                ' 外形（ウィンドウ全体）を合わせる場合は Size をコピー
+                Me.StartPosition = FormStartPosition.Manual
+                Me.Size = _prev.Size
+                Me.Location = _prev.Location
+
+                ' コメント解除するとクライアント領域を厳密に合わせられます（ボーダー差がある場合は注意）
+                ' Me.ClientSize = _prev.ClientSize
+            End If
+        Catch ex As Exception
+            ' サイズ取得で失敗しても無視しておく
+        End Try
+
+        ApplyRuntimeStyling()
     End Sub
 
     ' headerBar 用の空ハンドラ（安全化）
@@ -195,7 +226,15 @@ Partial Public Class Form1
         ' 必要なら描画コードを追加
     End Sub
 
-    Private Sub bottomNav_Paint(sender As Object, e As PaintEventArgs) Handles bottomNav.Paint
+    Private Sub bottomNav_Paint(sender As Object, e As PaintEventArgs)
+
+    End Sub
+
+    Private Sub flowRooms_Paint(sender As Object, e As PaintEventArgs) Handles flowRooms.Paint
+
+    End Sub
+
+    Private Sub footerBar_Paint(sender As Object, e As PaintEventArgs) Handles footerBar.Paint
 
     End Sub
 End Class
