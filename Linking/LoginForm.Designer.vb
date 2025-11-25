@@ -32,6 +32,7 @@ Partial Public Class LoginForm
         Me.Name = "LoginForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "ログイン"
+        Me.Font = New System.Drawing.Font("Yu Gothic UI", 10.0F)
         '
         ' lblTitle
         '
