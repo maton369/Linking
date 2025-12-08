@@ -166,8 +166,23 @@ Partial Public Class Form1
 
         card.Visible = True
         card.PerformLayout()
+
+        AddHandler card.Click, Sub(sender, e) OpenDirectMessage(title)
+        AddHandler lbl.Click, Sub(sender, e) OpenDirectMessage(title)
         Return card
     End Function
+
+    Private Sub OpenDirectMessage(title As String)
+        Dim frm As New DmForm(Me, title & " のDM")
+        Try
+            frm.StartPosition = FormStartPosition.Manual
+            frm.ClientSize = Me.ClientSize
+            frm.Location = Me.Location
+        Catch
+        End Try
+        frm.Show()
+        Me.Hide()
+    End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
         If flowRooms Is Nothing Then Return

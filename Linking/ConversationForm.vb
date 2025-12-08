@@ -100,9 +100,25 @@ Partial Public Class ConversationForm
         card.PerformLayout()
 
         ApplyRoundedRegion(card, 12)
+        AddHandler card.Click, Sub(sender, e) OpenDirectMessage(text)
+        AddHandler lbl.Click, Sub(sender, e) OpenDirectMessage(text)
+        AddHandler star.Click, Sub(sender, e) OpenDirectMessage(text)
+
         Debug.WriteLine($"[CreateMessageCard] text=""{text}"" targetWidth={innerWidth} finalWidth={card.Width} showStar={showStar}")
         Return card
     End Function
+
+    Private Sub OpenDirectMessage(text As String)
+        Dim frm As New DmForm(Me, _title & " のDM")
+        Try
+            frm.StartPosition = FormStartPosition.Manual
+            frm.ClientSize = Me.ClientSize
+            frm.Location = Me.Location
+        Catch
+        End Try
+        frm.Show()
+        Me.Hide()
+    End Sub
 
     Private Function GetInnerMessageWidth() As Integer
         If flowMessages Is Nothing Then Return 0
