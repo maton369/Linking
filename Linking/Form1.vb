@@ -240,7 +240,7 @@ Partial Public Class Form1
     Private Sub footerBar_Paint(sender As Object, e As PaintEventArgs) Handles footerBar.Paint
     End Sub
 
-    ' 起動時にカードを必ず1枚表示する（デバッグ用途）
+    ' 起動時にカードを必ず複数表示する（デバッグ用途）
     Private Sub EnsureInitialCard()
         Try
             If flowRooms Is Nothing Then
