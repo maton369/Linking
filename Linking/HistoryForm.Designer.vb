@@ -55,7 +55,7 @@ Partial Public Class HistoryForm
         contentPanel.Dock = DockStyle.Fill
         contentPanel.Location = New Point(0, 0)
         contentPanel.Name = "contentPanel"
-        contentPanel.Padding = New Padding(12, 8, 12, 0)
+        contentPanel.Padding = New Padding(12, 0, 12, 0)
         contentPanel.Size = New Size(576, 960)
         contentPanel.TabIndex = 0
         '
@@ -63,7 +63,7 @@ Partial Public Class HistoryForm
         '
         headerPanel.BackColor = Color.FromArgb(CByte(3), CByte(116), CByte(213))
         headerPanel.Dock = DockStyle.Top
-        headerPanel.Location = New Point(12, 8)
+        headerPanel.Location = New Point(12, 0)
         headerPanel.Name = "headerPanel"
         headerPanel.Padding = New Padding(12)
         headerPanel.Size = New Size(552, 64)
@@ -84,12 +84,13 @@ Partial Public Class HistoryForm
         btnTitle.Text = "ルーム履歴"
         btnTitle.UseVisualStyleBackColor = False
         headerPanel.Controls.Add(btnTitle)
-        contentPanel.Controls.Add(headerPanel)
         '
         ' infoPanel
         '
+        infoPanel.Controls.Add(lblTimer)
+        infoPanel.Controls.Add(cmbSort)
         infoPanel.Dock = DockStyle.Top
-        infoPanel.Padding = New Padding(4, 12, 4, 8)
+        infoPanel.Padding = New Padding(12, 12, 12, 8)
         infoPanel.Name = "infoPanel"
         infoPanel.Size = New Size(552, 72)
         infoPanel.TabIndex = 1
@@ -98,12 +99,11 @@ Partial Public Class HistoryForm
         '
         lblTimer.AutoSize = True
         lblTimer.Font = New Font("Yu Gothic UI", 12.0F, FontStyle.Bold)
-        lblTimer.Location = New Point(8, 20)
+        lblTimer.Location = New Point(12, 18)
         lblTimer.Name = "lblTimer"
         lblTimer.Size = New Size(93, 32)
         lblTimer.TabIndex = 2
         lblTimer.Text = "05:43:21"
-        infoPanel.Controls.Add(lblTimer)
         '
         ' cmbSort
         '
@@ -111,21 +111,25 @@ Partial Public Class HistoryForm
         cmbSort.Font = New Font("Yu Gothic UI", 10.0F)
         cmbSort.FormattingEnabled = True
         cmbSort.Items.AddRange(New Object() {"新しい順", "古い順"})
-        cmbSort.Location = New Point(408, 20)
+        cmbSort.Location = New Point(408, 18)
         cmbSort.Name = "cmbSort"
         cmbSort.Size = New Size(132, 36)
         cmbSort.TabIndex = 3
-        infoPanel.Controls.Add(cmbSort)
+        cmbSort.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        contentPanel.Controls.Add(flowRooms)
+        contentPanel.Controls.Add(backPanel)
         contentPanel.Controls.Add(infoPanel)
+        contentPanel.Controls.Add(headerPanel)
         '
         ' flowRooms
         '
         flowRooms.AutoScroll = True
         flowRooms.Dock = DockStyle.Fill
         flowRooms.FlowDirection = FlowDirection.TopDown
-        flowRooms.Location = New Point(12, 144)
+        flowRooms.Location = New Point(12, 136)
         flowRooms.Name = "flowRooms"
-        flowRooms.Padding = New Padding(12, 8, 12, 8)
+        flowRooms.Padding = New Padding(12, 144, 12, 24)
+        flowRooms.Margin = New Padding(0, 12, 0, 0)
         flowRooms.Size = New Size(552, 728)
         flowRooms.TabIndex = 4
         flowRooms.WrapContents = False
@@ -251,12 +255,17 @@ Partial Public Class HistoryForm
 
     ' 表示完了後にも一応幅を再調整
     Private Sub HistoryForm_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
+        LoadHistoryCards()
         AdjustCardsWidth()
+        CenterHeaderTitle()
+        CenterBackButton()
     End Sub
 
     Private Sub HistoryForm_Resize(sender As Object, e As EventArgs) Handles MyBase.Resize
         AdjustCardsWidth()
         ApplyFooterButtonLayout()
+        CenterHeaderTitle()
+        CenterBackButton()
     End Sub
 
     Private Sub HistoryForm_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
@@ -327,13 +336,14 @@ Partial Public Class HistoryForm
     End Sub
 
     ' --- カード生成 ---
-    Private Function CreateHistoryCard(title As String) As Panel
+    Private Function CreateHistoryCard(title As String, innerWidth As Integer) As Panel
         Dim card As New Panel()
-        card.Margin = New Padding(8)
-        card.BackColor = Color.FromArgb(240, 240, 240)
+        card.Margin = New Padding(8, 8, 8, 12)
+        card.BackColor = Color.FromArgb(204, 247, 253) ' Form1 のカード色に合わせる
         card.Padding = New Padding(12)
-        card.Height = 64
-        card.Width = Math.Max(100, GetInnerCardWidth())
+        card.Height = 80
+        card.Width = Math.Max(120, innerWidth)
+        card.MinimumSize = New Size(200, 80)
 
         Dim lbl As New Label()
         lbl.Text = title
@@ -346,9 +356,13 @@ Partial Public Class HistoryForm
         card.Controls.Add(lbl)
         card.Anchor = AnchorStyles.Left Or AnchorStyles.Right Or AnchorStyles.Top
         card.Visible = True
+        card.PerformLayout()
 
         ApplyRoundedRegion(card, 12)
+        AddHandler card.Click, Sub(sender, e) OpenConversation(title)
+        AddHandler lbl.Click, Sub(sender, e) OpenConversation(title)
 
+        Debug.WriteLine($"[CreateHistoryCard] title=""{title}"", targetWidth={innerWidth}, finalWidth={card.Width}, height={card.Height}")
         Return card
     End Function
 
@@ -364,18 +378,18 @@ Partial Public Class HistoryForm
             flowRooms.Controls.Clear()
 
             Dim titles As String() = {
-                "卒研の悩み部屋",
-                "暇つぶし"
+                "卒研の悩み部屋"
             }
 
             Dim baseWidth As Integer = GetInnerCardWidth()
+            Debug.WriteLine($"[LoadHistoryCards] start baseWidth={baseWidth}, flowRooms.ClientSize={flowRooms.ClientSize}")
 
             For Each t In titles
-                Dim card = CreateHistoryCard(t)
-                If baseWidth > 0 Then
-                    card.Width = baseWidth
-                End If
+                Dim width As Integer = If(baseWidth > 0, baseWidth, Math.Max(140, Me.ClientSize.Width - 40))
+                Dim card = CreateHistoryCard(t, width)
+                card.Width = width
                 flowRooms.Controls.Add(card)
+                Debug.WriteLine($"[LoadHistoryCards] added title=""{t}"" width={width}")
             Next
         Catch ex As Exception
             Debug.WriteLine($"[LoadHistoryCards] failed: {ex.Message}")
@@ -384,7 +398,20 @@ Partial Public Class HistoryForm
             flowRooms.PerformLayout()
             flowRooms.Refresh()
             PrintFlowRoomsContents("LoadHistoryCards")
+            Debug.WriteLine($"[LoadHistoryCards] done count={flowRooms.Controls.Count}")
         End Try
+    End Sub
+
+    Private Sub OpenConversation(title As String)
+        Dim frm As New ConversationForm(Me, title, allowStar:=True)
+        Try
+            frm.StartPosition = FormStartPosition.Manual
+            frm.ClientSize = Me.ClientSize
+            frm.Location = Me.Location
+        Catch
+        End Try
+        frm.Show()
+        Me.Hide()
     End Sub
 
     Private Function GetInnerCardWidth() As Integer
@@ -392,7 +419,7 @@ Partial Public Class HistoryForm
         Dim innerWidth As Integer = Math.Max(0, flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right)
         If innerWidth <= 0 Then Return 0
         ' スマホ幅に近づけるため最大幅を抑制
-        Return Math.Min(innerWidth - 4, 260)
+        Return Math.Min(innerWidth - 4, 280)
     End Function
 
     Private Sub AdjustCardsWidth()
@@ -404,12 +431,18 @@ Partial Public Class HistoryForm
             If TypeOf ctrl Is Panel Then
                 ctrl.Width = baseWidth
                 ApplyRoundedRegion(CType(ctrl, Panel), 12)
+                ' 中央寄せ：左右マージンを均等に設定
+                Dim leftMargin As Integer = Math.Max(0, (flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right - baseWidth) \ 2)
+                Dim m = ctrl.Margin
+                ctrl.Margin = New Padding(leftMargin, m.Top, leftMargin, m.Bottom)
+                Debug.WriteLine($"[AdjustCardsWidth] apply width={baseWidth} marginL/R={leftMargin} to {ctrl.GetType().Name}, final={ctrl.Width}")
             End If
         Next
 
         flowRooms.PerformLayout()
         flowRooms.Refresh()
         Debug.WriteLine($"[AdjustCardsWidth] baseWidth={baseWidth}, Controls.Count={flowRooms.Controls.Count}")
+        PrintFlowRoomsContents("AdjustCardsWidth")
     End Sub
 
     Private Sub PrintFlowRoomsContents(caller As String)

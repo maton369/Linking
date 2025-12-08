@@ -11,16 +11,135 @@ Partial Public Class FavoritesForm
     Public Sub New(prev As System.Windows.Forms.Form)
         Me.New()
         _prev = prev
-        ' ã§í ÇÃñﬂÇÈèàóùÇìoò^ÅiCommonUIHistory ÇégópÅj
+        ' ÔøΩÔøΩÔøΩ ÇÃñﬂÇÈèàÔøΩÔøΩÔøΩÔøΩoÔøΩ^ÔøΩiCommonUIHistory ÔøΩÔøΩÔøΩgÔøΩpÔøΩj
         CommonUIHistory.RegisterBackNavigation(Me, _prev, btnBack)
     End Sub
 
     Private Sub FavoritesForm_Load(sender As Object, e As EventArgs)
-        ' footer ÉåÉCÉAÉEÉgÇç\ê¨ÇµÅAÉiÉrÇÃãììÆÇã§í âª
+        ' footer ÔøΩÔøΩÔøΩCÔøΩAÔøΩEÔøΩgÔøΩÔøΩÔøΩ\ÔøΩÔøΩÔøΩÔøΩÔøΩAÔøΩiÔøΩrÔøΩÃãÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ âÔøΩ
         CommonUIHistory.ConfigureFooterLayout(footerBar, btnNavHome, btnNavRooms, btnNavFav, flowRooms)
 
-        ' Ç±ÇÃâÊñ ÇÕÅuÇ®ãCÇ…ì¸ÇËÅvÉ^ÉuÇÉAÉNÉeÉBÉuÇ∆ÇµÇƒã≠í≤ï\é¶
+        ' ÔøΩÔøΩÔøΩÃâÔøΩ ÇÕÅuÔøΩÔøΩÔøΩCÔøΩ…ìÔøΩÔøΩÔøΩvÔøΩ^ÔøΩuÔøΩÔøΩÔøΩAÔøΩNÔøΩeÔøΩBÔøΩuÔøΩ∆ÇÔøΩÔøΩƒãÔøΩÔøΩÔøΩÔøΩ\ÔøΩÔøΩ
         CommonUIHistory.RegisterFooterNavigation(Me, btnNavHome, btnNavRooms, btnNavFav, activeTab:="Fav")
+
+        LoadFavoriteCards()
+        CenterBackButton()
+        CenterHeaderTitle()
+    End Sub
+
+    ' „Ç∑„É≥„Éó„É´„Å™„Ç´„Éº„ÉâÁîüÊàêÔºàHistoryForm „Å®ÂêåÁ≠â„Çπ„Çø„Ç§„É´Ôºâ
+    Private Function CreateFavoriteCard(title As String, innerWidth As Integer) As Panel
+        Dim card As New Panel()
+        card.Margin = New Padding(8, 8, 8, 12)
+        card.BackColor = Color.FromArgb(204, 247, 253)
+        card.Padding = New Padding(12)
+        card.Height = 80
+        card.Width = Math.Max(120, innerWidth)
+        card.MinimumSize = New Size(200, 80)
+
+        Dim lbl As New Label()
+        lbl.Text = title
+        lbl.Dock = DockStyle.Fill
+        lbl.TextAlign = ContentAlignment.MiddleCenter
+        lbl.Font = New Font("Yu Gothic UI", 11.0F, FontStyle.Regular)
+        lbl.ForeColor = Color.Black
+        lbl.BackColor = Color.Transparent
+
+        card.Controls.Add(lbl)
+        card.Anchor = AnchorStyles.Left Or AnchorStyles.Right Or AnchorStyles.Top
+        card.Visible = True
+        card.PerformLayout()
+
+        ApplyRoundedRegion(card, 12)
+        AddHandler card.Click, Sub(sender, e) OpenConversation(title, allowStar:=False)
+        AddHandler lbl.Click, Sub(sender, e) OpenConversation(title, allowStar:=False)
+
+        Return card
+    End Function
+
+    Private Sub LoadFavoriteCards()
+        If flowRooms Is Nothing Then Return
+
+        flowRooms.SuspendLayout()
+        Try
+            flowRooms.Controls.Clear()
+            Dim titles As String() = {"ÂçíÁ†î„ÅÆÊÇ©„ÅøÈÉ®Â±ã", "Êöá„Å§„Å∂„Åó"}
+            Dim baseWidth As Integer = GetInnerCardWidth()
+            For Each t In titles
+                Dim width As Integer = If(baseWidth > 0, baseWidth, Math.Max(140, Me.ClientSize.Width - 40))
+                Dim card = CreateFavoriteCard(t, width)
+                card.Width = width
+                flowRooms.Controls.Add(card)
+                ' ‰∏≠Â§ÆÂØÑ„Åõ„Éû„Éº„Ç∏„É≥
+                Dim leftMargin As Integer = Math.Max(0, (flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right - width) \ 2)
+                Dim m = card.Margin
+                card.Margin = New Padding(leftMargin, m.Top, leftMargin, m.Bottom)
+            Next
+        Finally
+            flowRooms.ResumeLayout()
+            flowRooms.PerformLayout()
+            flowRooms.Refresh()
+        End Try
+    End Sub
+
+    Private Function GetInnerCardWidth() As Integer
+        If flowRooms Is Nothing Then Return 0
+        Dim innerWidth As Integer = Math.Max(0, flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right)
+        If innerWidth <= 0 Then Return 0
+        Return Math.Min(innerWidth - 4, 280)
+    End Function
+
+    Private Sub OpenConversation(title As String, allowStar As Boolean)
+        Dim frm As New ConversationForm(Me, title, allowStar)
+        Try
+            frm.StartPosition = FormStartPosition.Manual
+            frm.ClientSize = Me.ClientSize
+            frm.Location = Me.Location
+        Catch
+        End Try
+        frm.Show()
+        Me.Hide()
+    End Sub
+
+    Private Sub CenterBackButton()
+        If backPanel Is Nothing OrElse btnBack Is Nothing Then Return
+        Dim x As Integer = Math.Max(0, (backPanel.ClientSize.Width - btnBack.Width) \ 2)
+        Dim y As Integer = Math.Max(0, backPanel.Padding.Top)
+        btnBack.Location = New Point(x, y)
+    End Sub
+
+    Private Sub CenterHeaderTitle()
+        If headerPanel Is Nothing OrElse btnTitle Is Nothing Then Return
+        Dim x As Integer = Math.Max(0, (headerPanel.ClientSize.Width - btnTitle.Width) \ 2)
+        Dim y As Integer = Math.Max(0, headerPanel.ClientSize.Height - btnTitle.Height - 8)
+        btnTitle.Location = New Point(x, y)
+    End Sub
+
+    ' „É™„Çµ„Ç§„Ç∫ÊôÇ„Éè„É≥„Éâ„É©Ôºà„Éá„Ç∂„Ç§„Éä„Åß AddHandler Ê∏à„ÅøÔºâ
+    Private Sub HeaderPanel_Resize(sender As Object, e As EventArgs)
+        CenterHeaderTitle()
+    End Sub
+
+    Private Sub BackPanel_Resize(sender As Object, e As EventArgs)
+        CenterBackButton()
+    End Sub
+
+    ' Ëßí‰∏∏ÈÅ©Áî®ÔºàHistoryForm „Å®ÂêåÁ≠âÔºâ
+    Private Sub ApplyRoundedRegion(ctrl As Control, radius As Integer)
+        If ctrl Is Nothing Then Return
+        Try
+            Dim r As New Rectangle(0, 0, ctrl.Width, ctrl.Height)
+            Using gp As New Drawing2D.GraphicsPath()
+                Dim d As Integer = radius * 2
+                gp.AddArc(r.X, r.Y, d, d, 180, 90)
+                gp.AddArc(r.Right - d, r.Y, d, d, 270, 90)
+                gp.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90)
+                gp.AddArc(r.X, r.Bottom - d, d, d, 90, 90)
+                gp.CloseAllFigures()
+                ctrl.Region = New Region(gp)
+            End Using
+        Catch
+        End Try
     End Sub
 
 End Class
