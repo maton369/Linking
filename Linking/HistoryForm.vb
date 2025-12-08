@@ -1,15 +1,29 @@
 Imports System.Drawing
 Imports System.Windows.Forms
 
-Public Module CommonUI
-    ' footerBar ‚ÌƒŒƒCƒAƒEƒgi3“™•ªj‚Æ flow ƒRƒ“ƒeƒ“ƒc‚Ì‰º—]”’‚ğ’²®‚·‚é
-    Public Sub ConfigureFooterLayout(footer As Panel, navHome As Button, navRooms As Button, navFav As Button, Optional flowRooms As FlowLayoutPanel = Nothing)
+' =========================
+' ï¿½ï¿½ï¿½ï¿½ UI ï¿½wï¿½ï¿½ï¿½pï¿½[ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê—pï¿½j
+' =========================
+Public Module CommonUIHistory
+
+    ' footerBar ï¿½Ìƒï¿½ï¿½Cï¿½Aï¿½Eï¿½gï¿½i3ï¿½ï¿½ï¿½ï¿½ï¿½jï¿½ï¿½ flow ï¿½Rï¿½ï¿½ï¿½eï¿½ï¿½ï¿½cï¿½Ì‰ï¿½ï¿½]ï¿½ï¿½ï¿½ğ’²ï¿½ï¿½ï¿½ï¿½ï¿½
+    Public Sub ConfigureFooterLayout(footer As Panel,
+                                     navHome As Button,
+                                     navRooms As Button,
+                                     navFav As Button,
+                                     Optional flowRooms As FlowLayoutPanel = Nothing)
+
         If footer Is Nothing Then Return
+
         Try
             footer.BringToFront()
+
             Dim navHeight As Integer = If(footer.Height > 0, footer.Height, 64)
             If flowRooms IsNot Nothing Then
-                flowRooms.Padding = New Padding(flowRooms.Padding.Left, flowRooms.Padding.Top, flowRooms.Padding.Right, navHeight + 12)
+                flowRooms.Padding = New Padding(flowRooms.Padding.Left,
+                                                flowRooms.Padding.Top,
+                                                flowRooms.Padding.Right,
+                                                navHeight + 12)
             End If
 
             If footer.Width > 0 AndAlso footer.Height > 0 Then
@@ -32,102 +46,152 @@ Public Module CommonUI
                 Next
             End If
         Catch ex As Exception
-            ' ”O‚Ì‚½‚ß—áŠO‚Í‹zûiƒŒƒCƒAƒEƒg‚ÌÄs“™‚ÍŒÄ‚Ño‚µ‘¤‚Åj
+            ' ï¿½ï¿½ï¿½Cï¿½Aï¿½Eï¿½gï¿½Gï¿½ï¿½ï¿½[ï¿½Íˆï¿½ï¿½ï¿½Â‚Ô‚ï¿½ï¿½iï¿½vï¿½ï¿½ï¿½Iï¿½Å‚È‚ï¿½ï¿½ï¿½ï¿½ßj
         End Try
     End Sub
 
-    ' footer ‚Ìƒiƒr“®ì‚ğ“o˜^iƒz[ƒ€‹­’²A—š—ğ/‚¨‹C‚É“ü‚è‚Ì‘JˆÚj
-    Public Sub RegisterFooterNavigation(current As Form, navHome As Button, navRooms As Button, navFav As Button)
+    ' footer ï¿½Ìƒiï¿½rï¿½ï¿½ï¿½ï¿½ï¿½oï¿½^
+    ' activeTab: "Home" / "Rooms" / "Fav" ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ê‚©ï¿½ï¿½nï¿½ï¿½ï¿½ÄŒï¿½ï¿½İ‰ï¿½Ê‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½
+    Public Sub RegisterFooterNavigation(current As Form,
+                                        navHome As Button,
+                                        navRooms As Button,
+                                        navFav As Button,
+                                        Optional activeTab As String = "Home")
+
+        ' ï¿½Ü‚ï¿½ï¿½Sï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½iï¿½ï¿½ï¿½ß{ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½jï¿½É–ß‚ï¿½
         If navHome IsNot Nothing Then
-            AddHandler navHome.Click, Sub(sender, e)
-                                          navHome.BackColor = Color.FromArgb(255, 230, 0)
-                                          navHome.ForeColor = Color.Black
-                                          If navRooms IsNot Nothing Then
-                                              navRooms.BackColor = Color.Transparent
-                                              navRooms.ForeColor = Color.White
-                                          End If
-                                          If navFav IsNot Nothing Then
-                                              navFav.BackColor = Color.Transparent
-                                              navFav.ForeColor = Color.White
-                                          End If
-                                      End Sub
+            navHome.BackColor = Color.Transparent
+            navHome.ForeColor = Color.White
         End If
-
         If navRooms IsNot Nothing Then
-            AddHandler navRooms.Click, Sub(sender, e)
-                                           Dim f As New HistoryForm(current)
-                                           Try
-                                               f.StartPosition = FormStartPosition.Manual
-                                               f.ClientSize = current.ClientSize
-                                               f.Location = current.Location
-                                           Catch ex As Exception
-                                           End Try
-                                           f.Show()
-                                           current.Hide()
-                                       End Sub
+            navRooms.BackColor = Color.Transparent
+            navRooms.ForeColor = Color.White
+        End If
+        If navFav IsNot Nothing Then
+            navFav.BackColor = Color.Transparent
+            navFav.ForeColor = Color.White
         End If
 
+        ' ï¿½Aï¿½Nï¿½eï¿½Bï¿½uï¿½^ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½Fï¿½Å‹ï¿½ï¿½ï¿½
+        Select Case activeTab
+            Case "Home"
+                If navHome IsNot Nothing Then
+                    navHome.BackColor = Color.FromArgb(255, 230, 0)
+                    navHome.ForeColor = Color.Black
+                End If
+            Case "Rooms"
+                If navRooms IsNot Nothing Then
+                    navRooms.BackColor = Color.FromArgb(255, 230, 0)
+                    navRooms.ForeColor = Color.Black
+                End If
+            Case "Fav"
+                If navFav IsNot Nothing Then
+                    navFav.BackColor = Color.FromArgb(255, 230, 0)
+                    navFav.ForeColor = Color.Black
+                End If
+        End Select
+
+        ' ----- ï¿½Nï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½ï¿½Ì‘Jï¿½Úƒnï¿½ï¿½ï¿½hï¿½ï¿½ -----
+
+        ' Home ï¿½{ï¿½^ï¿½ï¿½
+        If navHome IsNot Nothing Then
+            RemoveHandler navHome.Click, Nothing
+            AddHandler navHome.Click,
+                Sub(sender, e)
+                    Dim f As New Form1(current)
+                    Try
+                        f.StartPosition = FormStartPosition.Manual
+                        f.ClientSize = current.ClientSize
+                        f.Location = current.Location
+                    Catch ex As Exception
+                    End Try
+                    f.Show()
+                    current.Hide()
+                End Sub
+        End If
+
+        ' Roomsï¿½iï¿½ï¿½ï¿½ï¿½ï¿½jï¿½{ï¿½^ï¿½ï¿½ - ï¿½Oï¿½ï¿½ÊQï¿½Æ‚ï¿½nï¿½ï¿½
+        If navRooms IsNot Nothing Then
+            RemoveHandler navRooms.Click, Nothing
+            AddHandler navRooms.Click,
+                Sub(sender, e)
+                    If TypeOf current Is HistoryForm Then
+                        Exit Sub
+                    End If
+                    Dim f As New HistoryForm(current)
+                    Try
+                        f.StartPosition = FormStartPosition.Manual
+                        f.ClientSize = current.ClientSize
+                        f.Location = current.Location
+                    Catch ex As Exception
+                    End Try
+                    f.Show()
+                    current.Hide()
+                End Sub
+        End If
+
+        ' ï¿½ï¿½ï¿½Cï¿½É“ï¿½ï¿½ï¿½{ï¿½^ï¿½ï¿½
         If navFav IsNot Nothing Then
-            AddHandler navFav.Click, Sub(sender, e)
-                                         Dim f As New FavoritesForm(current)
-                                         Try
-                                             f.StartPosition = FormStartPosition.Manual
-                                             f.ClientSize = current.ClientSize
-                                             f.Location = current.Location
-                                         Catch ex As Exception
-                                         End Try
-                                         f.Show()
-                                         current.Hide()
-                                     End Sub
+            RemoveHandler navFav.Click, Nothing
+            AddHandler navFav.Click,
+                Sub(sender, e)
+                    If TypeOf current Is FavoritesForm Then
+                        Exit Sub
+                    End If
+                    Dim f As New FavoritesForm(current)
+                    Try
+                        f.StartPosition = FormStartPosition.Manual
+                        f.ClientSize = current.ClientSize
+                        f.Location = current.Location
+                    Catch ex As Exception
+                    End Try
+                    f.Show()
+                    current.Hide()
+                End Sub
         End If
     End Sub
 
-    ' ”CˆÓ‚ÌƒtƒH[ƒ€‚Éu–ß‚évƒ{ƒ^ƒ“‚ğ“o˜^‚µ‚ÄA•Â‚¶‚½‚ç prev ‚ğ Show ‚·‚é‹¤’Êˆ—
+    ' ï¿½Cï¿½Ó‚Ìƒtï¿½Hï¿½[ï¿½ï¿½ï¿½Éuï¿½ß‚ï¿½vï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½oï¿½^ï¿½ï¿½ï¿½ÄAï¿½Â‚ï¿½ï¿½ï¿½ï¿½ï¿½ prev ï¿½ï¿½ Show ï¿½ï¿½ï¿½é‹¤ï¿½Êï¿½ï¿½ï¿½
     Public Sub RegisterBackNavigation(frm As Form, prev As Form, backButton As Button)
         If backButton IsNot Nothing Then
-            AddHandler backButton.Click, Sub(sender, e) frm.Close()
+            AddHandler backButton.Click,
+                Sub(sender, e)
+                    frm.Close()
+                End Sub
         End If
-        AddHandler frm.FormClosed, Sub(sender, e)
-                                       If prev IsNot Nothing Then
-                                           prev.Show()
-                                       End If
-                                   End Sub
+
+        AddHandler frm.FormClosed,
+            Sub(sender, e)
+                If prev IsNot Nothing Then
+                    prev.Show()
+                End If
+            End Sub
     End Sub
+
 End Module
 
+' =========================
+' ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½Hï¿½[ï¿½ï¿½ï¿½{ï¿½Ìiï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Ì‚İj
+' =========================
 Partial Public Class HistoryForm
     Inherits System.Windows.Forms.Form
 
-    Private _prev As System.Windows.Forms.Form
+    ' ï¿½tï¿½Hï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½
+    Private Sub HistoryForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³å…±é€šè¨­å®š
+        CommonUIHistory.ConfigureFooterLayout(footerBar, btnNavHome, btnNavRooms, btnNavFav, flowRooms)
+        CommonUIHistory.RegisterFooterNavigation(Me, btnNavHome, btnNavRooms, btnNavFav, activeTab:="Rooms")
 
-    Public Sub New()
-        InitializeComponent()
-        AddHandler Me.Load, AddressOf HistoryForm_Load
-    End Sub
-
-    Public Sub New(prev As System.Windows.Forms.Form)
-        Me.New()
-        _prev = prev
-        ' ‹¤’Ê‚Ì–ß‚éˆ—‚ğ“o˜^
-        CommonUI.RegisterBackNavigation(Me, _prev, btnBack)
-    End Sub
-
-    Private Sub HistoryForm_Load(sender As Object, e As EventArgs)
-        ' footer ƒŒƒCƒAƒEƒg‚ğ\¬‚µƒiƒr‚ğ“o˜^
-        CommonUI.ConfigureFooterLayout(footerBar, btnNavHome, btnNavRooms, btnNavFav, flowRooms)
-        CommonUI.RegisterFooterNavigation(Me, btnNavHome, btnNavRooms, btnNavFav)
-        ' ‚±‚Ì‰æ–Ê‚Í—š—ğ‚È‚Ì‚Å‹­’²‚·‚éê‡:
-        btnNavRooms.BackColor = Color.FromArgb(255, 230, 0)
-        btnNavRooms.ForeColor = Color.Black
-    End Sub
-
-    Private Sub btnBack_Click(sender As Object, e As EventArgs)
-        Me.Close()
-    End Sub
-
-    Private Sub HistoryForm_FormClosed(sender As Object, e As System.Windows.Forms.FormClosedEventArgs)
-        If _prev IsNot Nothing Then
-            _prev.Show()
+        ' ãƒ‡ã‚¶ã‚¤ãƒ³åˆæœŸå€¤
+        If cmbSort IsNot Nothing Then
+            cmbSort.SelectedIndex = 0
         End If
+
+        LoadHistoryCards()
+        ApplyFooterButtonLayout()
+        AdjustCardsWidth()
+        CenterBackButton()
+        CenterHeaderTitle()
     End Sub
+
 End Class
