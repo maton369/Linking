@@ -65,11 +65,11 @@ Partial Public Class ConversationForm
         flowMessages.AutoScroll = True
         flowMessages.Dock = DockStyle.Fill
         flowMessages.FlowDirection = FlowDirection.TopDown
-        flowMessages.Location = New Point(12, 166)
+        flowMessages.Location = New Point(12, 136)
         flowMessages.Margin = New Padding(0, 12, 0, 0)
         flowMessages.Name = "flowMessages"
         flowMessages.Padding = New Padding(12, 144, 12, 24)
-        flowMessages.Size = New Size(552, 674)
+        flowMessages.Size = New Size(552, 704)
         flowMessages.TabIndex = 4
         flowMessages.WrapContents = False
         ' 
@@ -103,7 +103,7 @@ Partial Public Class ConversationForm
         infoPanel.Controls.Add(lblTimer)
         infoPanel.Controls.Add(cmbSort)
         infoPanel.Dock = DockStyle.Top
-        infoPanel.Location = New Point(12, 94)
+        infoPanel.Location = New Point(12, 64)
         infoPanel.Name = "infoPanel"
         infoPanel.Padding = New Padding(12, 12, 12, 8)
         infoPanel.Size = New Size(552, 72)
@@ -127,7 +127,7 @@ Partial Public Class ConversationForm
         ' 
         lblTimer.AutoSize = True
         lblTimer.Font = New Font("Yu Gothic UI", 12.0F, FontStyle.Bold)
-        lblTimer.Location = New Point(72, 30)
+        lblTimer.Location = New Point(12, 18)
         lblTimer.Name = "lblTimer"
         lblTimer.Size = New Size(102, 32)
         lblTimer.TabIndex = 2
@@ -140,7 +140,7 @@ Partial Public Class ConversationForm
         cmbSort.Font = New Font("Yu Gothic UI", 10.0F)
         cmbSort.FormattingEnabled = True
         cmbSort.Items.AddRange(New Object() {"新しい順", "古い順"})
-        cmbSort.Location = New Point(748, 30)
+        cmbSort.Location = New Point(408, 18)
         cmbSort.Name = "cmbSort"
         cmbSort.Size = New Size(132, 36)
         cmbSort.TabIndex = 3
@@ -153,7 +153,7 @@ Partial Public Class ConversationForm
         headerPanel.Location = New Point(12, 0)
         headerPanel.Name = "headerPanel"
         headerPanel.Padding = New Padding(12)
-        headerPanel.Size = New Size(552, 94)
+        headerPanel.Size = New Size(552, 64)
         headerPanel.TabIndex = 0
         ' 
         ' btnTitle
@@ -163,7 +163,7 @@ Partial Public Class ConversationForm
         btnTitle.FlatStyle = FlatStyle.Flat
         btnTitle.Font = New Font("Yu Gothic UI", 12.0F, FontStyle.Bold)
         btnTitle.ForeColor = Color.White
-        btnTitle.Location = New Point(159, 29)
+        btnTitle.Location = New Point(156, 12)
         btnTitle.Name = "btnTitle"
         btnTitle.Size = New Size(240, 36)
         btnTitle.TabIndex = 1
