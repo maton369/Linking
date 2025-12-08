@@ -1,24 +1,23 @@
 ﻿Imports System.Drawing.Drawing2D
+Imports System.Diagnostics
 
 Partial Public Class Form1
     Inherits System.Windows.Forms.Form
 
     Private ReadOnly _prev As System.Windows.Forms.Form
 
-    ' footerBar を参照する互換エイリアス（デザイナで定義された footerBar を bottomNav として扱う）
     Private ReadOnly Property bottomNav As Panel
         Get
             Return footerBar
         End Get
     End Property
 
-    ' 既存のデフォルトコンストラクタ（デザイナ用）
     Public Sub New()
         InitializeComponent()
         AddHandler Me.Load, AddressOf Form1_Load
         AddHandler Me.Resize, AddressOf Form1_Resize
+        AddHandler Me.Shown, AddressOf Form1_Shown
 
-        ' bottomNav の Paint ハンドラはコントロールが初期化済みのときのみ登録する
         If bottomNav IsNot Nothing Then
             AddHandler bottomNav.Paint, AddressOf bottomNav_Paint
         End If
@@ -26,11 +25,8 @@ Partial Public Class Form1
         _prev = Nothing
     End Sub
 
-    ' 遷移元フォームを受け取るコンストラクタ（実行時遷移用）
     Public Sub New(prev As System.Windows.Forms.Form)
-        ' デザイナで必要な初期化を行う
         Me.New()
-        ' 遷移元を保持して、閉じたときに戻すハンドラを登録
         Dim fi = Me.GetType().GetField("_prev", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance)
         If fi IsNot Nothing Then
             fi.SetValue(Me, prev)
@@ -40,25 +36,66 @@ Partial Public Class Form1
 
     Private Sub Form1_FormClosed(sender As Object, e As System.Windows.Forms.FormClosedEventArgs)
         If _prev IsNot Nothing Then
-            ' 遷移元を再表示して戻れるようにする
             _prev.Show()
-        Else
-            ' _prev が無ければアプリ全体を終了する場合はここで Application.Exit() を呼ぶ
-            ' Application.Exit()
         End If
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs)
-        ' ハンドラを確実に登録
         EnsureHandlers()
 
-        ' 実行時スタイリング（角丸・ナビ位置など）
+        Try
+            If _prev IsNot Nothing Then
+                Me.StartPosition = FormStartPosition.Manual
+                Me.ClientSize = _prev.ClientSize
+                Me.Location = _prev.Location
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"[Form1_Load] prev sizing failed: {ex.Message}")
+        End Try
+
+        ' ---- レイアウトの安定化（Dock のみ明示・Z オーダーはデザイナの設定を尊重）----
+        Me.SuspendLayout()
+        Try
+            If headerBar IsNot Nothing Then
+                headerBar.Dock = DockStyle.Top
+                headerBar.Location = New Point(0, 0)
+            End If
+
+            If Me.Controls.ContainsKey("panelSearch") AndAlso panelSearch IsNot Nothing Then
+                panelSearch.Dock = DockStyle.Top
+            End If
+
+            If footerBar IsNot Nothing Then
+                footerBar.Dock = DockStyle.Bottom
+            End If
+
+            If flowRooms IsNot Nothing Then
+                flowRooms.Dock = DockStyle.Fill
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"[Form1_Load] layout stabilization failed: {ex.Message}")
+        Finally
+            Me.ResumeLayout()
+        End Try
+
+        ' footer レイアウトを構成（位置のみ）とナビ登録（Load 時に一度だけ）
+        CommonUI.ConfigureFooterLayout(bottomNav, btnNavHome, btnNavRooms, btnNavFav, flowRooms)
+        CommonUI.RegisterFooterNavigation(Me, btnNavHome, btnNavRooms, btnNavFav)
+
         ApplyRuntimeStyling()
+        ' カード追加は Shown で実行（表示確定後）
+    End Sub
+
+    ' フォーム表示直後に確実にカードを一つ表示する
+    Private Sub Form1_Shown(sender As Object, e As EventArgs)
+        ' Shown の時点で最終サイズが確定しているので再配置してカード表示
+        CommonUI.ConfigureFooterLayout(bottomNav, btnNavHome, btnNavRooms, btnNavFav, flowRooms)
+        EnsureInitialCard()
     End Sub
 
     Private Sub Form1_Resize(sender As Object, e As EventArgs)
-        ' ウィンドウサイズ変更時に角丸等を再適用
         ApplyRuntimeStyling()
+        AdjustCardsWidth()
     End Sub
 
     Private Sub ApplyRuntimeStyling()
@@ -70,109 +107,93 @@ Partial Public Class Form1
                     btnAdd.Region = New Region(gp)
                 End Using
             Catch ex As Exception
-                ' 無視：デザイナやランタイム環境で失敗することがある
+                Debug.WriteLine($"[ApplyRuntimeStyling] btnAdd round failed: {ex.Message}")
             End Try
         End If
 
-        ' フォーム本体を角丸にする（devicePanel を廃止したため Me を使用）
-        If Me.ClientSize.Width > 0 AndAlso Me.ClientSize.Height > 0 Then
+        ' フォーム本体の角丸は無効化（矩形に戻す）
+        Try
+            Me.Region = Nothing
+        Catch ex As Exception
+        End Try
+
+        ' footer レイアウトの再構成（Resize 等で再配置）
+        CommonUI.ConfigureFooterLayout(bottomNav, btnNavHome, btnNavRooms, btnNavFav, flowRooms)
+
+        ' footer の下部角丸（既存挙動を維持）
+        If bottomNav IsNot Nothing AndAlso bottomNav.Width > 0 AndAlso bottomNav.Height > 0 Then
             Try
-                Dim r As Integer = Math.Min(24, Math.Min(Me.ClientSize.Width \ 10, Me.ClientSize.Height \ 10))
-                Using gp As New GraphicsPath()
-                    Dim w = Me.ClientSize.Width
-                    Dim h = Me.ClientSize.Height
-                    gp.AddArc(0, 0, r * 2, r * 2, 180, 90)
-                    gp.AddArc(w - r * 2, 0, r * 2, r * 2, 270, 90)
-                    gp.AddArc(w - r * 2, h - r * 2, r * 2, r * 2, 0, 90)
-                    gp.AddArc(0, h - r * 2, r * 2, r * 2, 90, 90)
-                    gp.CloseFigure()
-                    Me.Region = New Region(gp)
+                Dim r2 As Integer = Math.Min(24, Math.Min(bottomNav.Width \ 10, bottomNav.Height \ 2))
+                Using gp2 As New GraphicsPath()
+                    Dim w3 = bottomNav.Width
+                    Dim h3 = bottomNav.Height
+                    gp2.AddLine(0, 0, w3, 0)
+                    gp2.AddLine(w3, 0, w3, h3 - r2 * 2)
+                    gp2.AddArc(w3 - r2 * 2, h3 - r2 * 2, r2 * 2, r2 * 2, 0, 90)
+                    gp2.AddLine(w3 - r2 * 2, h3, r2, h3)
+                    gp2.AddArc(0, h3 - r2 * 2, r2 * 2, r2 * 2, 90, 90)
+                    gp2.AddLine(0, h3 - r2 * 2, 0, 0)
+                    gp2.CloseFigure()
+                    bottomNav.Region = New Region(gp2)
                 End Using
             Catch ex As Exception
-            End Try
-        End If
-
-        ' bottomNav を最前面へ出し、flowRooms に下余白を確保
-        If bottomNav IsNot Nothing Then
-            Try
-                bottomNav.BringToFront()
-                Dim navHeight As Integer = If(bottomNav.Height > 0, bottomNav.Height, 64)
-                If flowRooms IsNot Nothing Then
-                    flowRooms.Padding = New Padding(flowRooms.Padding.Left, flowRooms.Padding.Top, flowRooms.Padding.Right, navHeight + 12)
-                End If
-
-                ' bottomNav の下部角を丸く（ランタイム）
-                If bottomNav.Width > 0 AndAlso bottomNav.Height > 0 Then
-                    Dim r2 As Integer = Math.Min(24, Math.Min(bottomNav.Width \ 10, bottomNav.Height \ 2))
-                    Using gp2 As New GraphicsPath()
-                        Dim w2 = bottomNav.Width
-                        Dim h2 = bottomNav.Height
-
-                        ' 描画順を変えて下側の角を丸くする
-                        gp2.AddLine(0, 0, w2, 0)                                   ' top edge
-                        gp2.AddLine(w2, 0, w2, h2 - r2 * 2)                       ' right edge
-                        gp2.AddArc(w2 - r2 * 2, h2 - r2 * 2, r2 * 2, r2 * 2, 0, 90) ' bottom-right corner
-                        gp2.AddLine(w2 - r2 * 2, h2, r2, h2)                       ' bottom edge
-                        gp2.AddArc(0, h2 - r2 * 2, r2 * 2, r2 * 2, 90, 90)         ' bottom-left corner
-                        gp2.AddLine(0, h2 - r2 * 2, 0, 0)                          ' left edge
-                        gp2.CloseFigure()
-                        bottomNav.Region = New Region(gp2)
-                    End Using
-                End If
-            Catch ex As Exception
+                Debug.WriteLine($"[ApplyRuntimeStyling] footer rounding failed: {ex.Message}")
             End Try
         End If
     End Sub
 
-    ' カードを作成して返す（呼び出し元で幅を調整）
     Private Function CreateRoomCard(title As String, count As String, time As String) As Panel
         Dim card As New Panel()
-        card.Size = New System.Drawing.Size(520, 120)
         card.Margin = New Padding(6)
         card.BackColor = System.Drawing.Color.FromArgb(204, 247, 253)
         card.Padding = New Padding(12)
 
-        ' シンプルなラベルを追加して見えるようにする
+        ' 高さ固定、幅は追加時に調整する
+        card.Height = 120
+        card.Width = 520
+
         Dim lbl As New Label()
-        lbl.Text = $"{title} — {count} — {time}"
+        lbl.Text = String.Format("{0} — {1} — {2}", title, count, time)
         lbl.AutoSize = False
         lbl.Dock = DockStyle.Fill
         lbl.TextAlign = ContentAlignment.MiddleLeft
-        card.Controls.Add(lbl)
+        lbl.ForeColor = Color.Black
+        lbl.BackColor = Color.Transparent
 
+        lbl.Font = Me.Font
+        card.Controls.Add(lbl)
+        lbl.BringToFront()
+
+        card.Visible = True
+        card.PerformLayout()
         Return card
     End Function
 
-    Private Sub lblScreenTitle_Click(sender As Object, e As EventArgs)
-        ' 何もしない
-    End Sub
-
-    ' btnAdd のクリックでカード追加：既存をクリアして必ず一枚だけ表示する
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-        If flowRooms Is Nothing Then
-            Return
-        End If
+        If flowRooms Is Nothing Then Return
 
         flowRooms.SuspendLayout()
         Try
-            ' 既存カードは削除して一枚だけ表示
             flowRooms.Controls.Clear()
 
-            Dim card = CreateRoomCard("テストルーム", "0人", "0:00")
+            Dim card = CreateRoomCard("満員電車", "32人", "1:00:00")
             If card IsNot Nothing Then
-                ' flowRooms の内幅に合わせる（padding を考慮）
-                Dim innerWidth As Integer = flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right
+                Dim innerWidth As Integer = Math.Max(0, flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right)
                 If innerWidth > 0 Then
-                    card.Width = Math.Max(0, innerWidth - 4) ' 少し余裕を持たせる
+                    card.Width = Math.Max(0, innerWidth - 4)
+                Else
+                    card.Width = Math.Max(520, Me.ClientSize.Width - 40)
                 End If
-                card.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
-
                 flowRooms.Controls.Add(card)
+                ' FlowLayoutPanel 管理につき Anchor は不要だが安全化しておく
+                card.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
                 card.BringToFront()
             End If
         Finally
             flowRooms.ResumeLayout()
+            flowRooms.PerformLayout()
             flowRooms.Refresh()
+            PrintFlowRoomsContents("btnAdd_Click")
         End Try
     End Sub
 
@@ -182,7 +203,6 @@ Partial Public Class Form1
             AddHandler btnAdd.Click, AddressOf btnAdd_Click
         End If
 
-        ' btnNext が存在すれば遷移ハンドラを登録（別の画面に遷移する例）
         If Me.Controls.ContainsKey("btnNext") Then
             Dim btn = TryCast(Me.Controls("btnNext"), System.Windows.Forms.Button)
             If btn IsNot Nothing Then
@@ -192,49 +212,100 @@ Partial Public Class Form1
         End If
     End Sub
 
-    ' 次の画面へ遷移するボタン（例）
     Private Sub btnNext_Click(sender As Object, e As EventArgs)
         Dim nextForm As New SecondForm(Me)
         nextForm.Show()
         Me.Hide()
     End Sub
 
-    Private Sub Form1_Load_1(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' ここは MyBase.Load にハンドルされるエントリポイントです。
-        ' 遷移元（_prev）が渡されている場合、ウィンドウの外形サイズ（Size）と位置（Location）を合わせる。
-        EnsureHandlers()
-
-        Try
-            If _prev IsNot Nothing Then
-                ' 外形（ウィンドウ全体）を合わせる場合は Size をコピー
-                Me.StartPosition = FormStartPosition.Manual
-                Me.Size = _prev.Size
-                Me.Location = _prev.Location
-
-                ' コメント解除するとクライアント領域を厳密に合わせられます（ボーダー差がある場合は注意）
-                ' Me.ClientSize = _prev.ClientSize
-            End If
-        Catch ex As Exception
-            ' サイズ取得で失敗しても無視しておく
-        End Try
-
-        ApplyRuntimeStyling()
-    End Sub
-
-    ' headerBar 用の空ハンドラ（安全化）
     Private Sub headerBar_Paint(sender As Object, e As PaintEventArgs)
-        ' 必要なら描画コードを追加
     End Sub
 
     Private Sub bottomNav_Paint(sender As Object, e As PaintEventArgs)
-
     End Sub
 
+    ' カードが出ている状態で Paint が呼ばれたらデバッグ出力
     Private Sub flowRooms_Paint(sender As Object, e As PaintEventArgs) Handles flowRooms.Paint
-
+        Try
+            If flowRooms IsNot Nothing AndAlso flowRooms.Controls.Count > 0 Then
+                PrintFlowRoomsContents("flowRooms_Paint")
+            Else
+                Debug.WriteLine("[flowRooms_Paint] No cards in flowRooms.")
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"[flowRooms_Paint] Exception: {ex.Message}")
+        End Try
     End Sub
 
     Private Sub footerBar_Paint(sender As Object, e As PaintEventArgs) Handles footerBar.Paint
+    End Sub
 
+    ' 起動時にカードを必ず1枚表示する（デバッグ用途）
+    Private Sub EnsureInitialCard()
+        Try
+            If flowRooms Is Nothing Then
+                Debug.WriteLine("[EnsureInitialCard] flowRooms is Nothing")
+                Return
+            End If
+
+            flowRooms.SuspendLayout()
+            flowRooms.Controls.Clear()
+
+            Dim card = CreateRoomCard("満員電車", "32人", "1:00:00")
+            Dim innerWidth As Integer = Math.Max(0, flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right)
+            If innerWidth > 0 Then
+                card.Width = Math.Max(0, innerWidth - 4)
+            Else
+                card.Width = Math.Max(520, Me.ClientSize.Width - 40)
+            End If
+
+            flowRooms.Controls.Add(card)
+            card.BringToFront()
+            flowRooms.ResumeLayout()
+            flowRooms.PerformLayout()
+            flowRooms.Refresh()
+
+            PrintFlowRoomsContents("EnsureInitialCard")
+        Catch ex As Exception
+            Debug.WriteLine($"[EnsureInitialCard] failed: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub AdjustCardsWidth()
+        If flowRooms Is Nothing Then Return
+        Dim innerWidth As Integer = Math.Max(0, flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right)
+        For Each ctrl As Control In flowRooms.Controls
+            If TypeOf ctrl Is Panel Then
+                If innerWidth > 0 Then
+                    ctrl.Width = Math.Max(0, innerWidth - 4)
+                End If
+            End If
+        Next
+        flowRooms.PerformLayout()
+        flowRooms.Refresh()
+        Debug.WriteLine($"[AdjustCardsWidth] flowRooms.ClientSize={flowRooms.ClientSize}, Controls.Count={flowRooms.Controls.Count}")
+    End Sub
+
+    ' flowRooms の内容を出力（デバッグ用）
+    Private Sub PrintFlowRoomsContents(caller As String)
+        Try
+            If flowRooms Is Nothing Then
+                Debug.WriteLine($"[{caller}] flowRooms is Nothing")
+                Return
+            End If
+
+            Debug.WriteLine($"[{caller}] flowRooms.ClientSize={flowRooms.ClientSize}, Controls.Count={flowRooms.Controls.Count}")
+            For i As Integer = 0 To flowRooms.Controls.Count - 1
+                Dim ctrl = flowRooms.Controls(i)
+                Debug.WriteLine($"[{caller}] Index={i} Type={ctrl.GetType().Name} Visible={ctrl.Visible} Size={ctrl.Size} Location={ctrl.Location}")
+                For Each ch As Control In ctrl.Controls
+                    If TypeOf ch Is Label Then
+                        Debug.WriteLine($"[{caller}]   Child Label.Text = ""{ch.Text}""")
+                    End If
+                Next
+            Next
+        Catch ex As Exception
+            Debug.WriteLine($"[PrintFlowRoomsContents] failed: {ex.Message}")
+        End Try
     End Sub
 End Class
