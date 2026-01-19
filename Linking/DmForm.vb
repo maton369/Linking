@@ -46,11 +46,12 @@ Partial Public Class DmForm
         Try
             flowDM.Controls.Clear()
 
+            ' Tuple(メッセージ, isMe（自分かどうか）, highlight（ハイライト）)
             Dim msgs As Tuple(Of String, Boolean, Boolean)() = {
-                Tuple.Create("最近、進捗が全然出なくて焦っています", False, True),
-                Tuple.Create("自分もまったく同じです…。今日は割り切って文献だけ読む日にします！", False, False),
-                Tuple.Create("なるほど…！やることを絞るの、良さそうですね。気持ちが少し楽になりました。", True, True),
-                Tuple.Create("無理に全部やろうとすると余計に進まなくなるんですよね。一緒に少しずつ進めましょう！", False, False)
+                Tuple.Create("最近、進捗が全然出なくて焦っています", False, False),
+                Tuple.Create("自分もまったく同じです…。今日は割り切って文献だけ読む日にします！", True, False),
+                Tuple.Create("なるほど…！やることを絞るの、良さそうですね。気持ちが少し楽になりました。", False, False),
+                Tuple.Create("無理に全部やろうとすると余計に進まなくなるんですよね。一緒に少しずつ進めましょう！", True, False)
             }
 
             ' ★ 幅は常に固定値
@@ -72,24 +73,45 @@ Partial Public Class DmForm
 
     Private Function CreateBubble(text As String, isMe As Boolean, highlight As Boolean, innerWidth As Integer) As Panel
         Dim card As New Panel()
-        ' 左右の余白は固定。ここを変えると位置も変えられる
-        card.Margin = New Padding(40, 8, 40, 12)
-        card.BackColor = If(highlight, Color.FromArgb(0, 184, 242), Color.FromArgb(238, 238, 238))
-        card.Padding = New Padding(12)
+
+        ' isMeに応じて背景色と配置を変更
+        If isMe Then
+            ' 自分のメッセージ：右寄せ、水色背景
+            card.Margin = New Padding(80, 8, 20, 12)
+            card.BackColor = Color.FromArgb(0, 184, 242)
+            card.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        Else
+            ' 相手のメッセージ：左寄せ、グレー背景（ハイライト時は明るいグレー）
+            card.Margin = New Padding(20, 8, 80, 12)
+            card.BackColor = If(highlight, Color.FromArgb(200, 230, 255), Color.FromArgb(238, 238, 238))
+            card.Anchor = AnchorStyles.Top Or AnchorStyles.Left
+        End If
+
+        card.Padding = New Padding(16)
         card.Height = 80
         card.Width = innerWidth
         card.MinimumSize = New Size(200, 80)
-        card.Anchor = AnchorStyles.Top Or AnchorStyles.Left
+
+        ' 送信者ラベル（自分/相手を明示）
+        Dim lblSender As New Label()
+        lblSender.Text = If(isMe, "あなた", "相手")
+        lblSender.Dock = DockStyle.Top
+        lblSender.Height = 20
+        lblSender.Font = New Font("Yu Gothic UI", 8.0F, FontStyle.Bold)
+        lblSender.ForeColor = If(isMe, Color.White, Color.FromArgb(100, 100, 100))
+        lblSender.BackColor = Color.Transparent
+        lblSender.TextAlign = ContentAlignment.MiddleLeft
 
         Dim lbl As New Label()
         lbl.Text = text
         lbl.Dock = DockStyle.Fill
         lbl.TextAlign = ContentAlignment.MiddleLeft
         lbl.Font = New Font("Yu Gothic UI", 10.5F, FontStyle.Regular)
-        lbl.ForeColor = If(highlight, Color.White, Color.Black)
+        lbl.ForeColor = If(isMe, Color.White, Color.Black)
         lbl.BackColor = Color.Transparent
 
         card.Controls.Add(lbl)
+        card.Controls.Add(lblSender)
         card.Visible = True
         card.PerformLayout()
 
