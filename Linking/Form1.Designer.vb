@@ -42,30 +42,33 @@ Partial Public Class Form1
         panelSearch.Padding = New Padding(8)
         panelSearch.Size = New Size(576, 56)
         panelSearch.TabIndex = 2
-        ' 
+        '
         ' txtSearch
-        ' 
-        txtSearch.BorderStyle = BorderStyle.None
+        '
+        txtSearch.BorderStyle = BorderStyle.FixedSingle
         txtSearch.Dock = DockStyle.Fill
+        txtSearch.Font = New Font("Yu Gothic UI", 11.0F, FontStyle.Regular)
         txtSearch.Location = New Point(8, 8)
         txtSearch.Margin = New Padding(0)
         txtSearch.Name = "txtSearch"
-        txtSearch.PlaceholderText = "検索"
+        txtSearch.PlaceholderText = "🔍 ルームを検索..."
         txtSearch.Size = New Size(504, 27)
         txtSearch.TabIndex = 0
-        ' 
+        '
         ' btnAdd
-        ' 
-        btnAdd.BackColor = Color.FromArgb(CByte(255), CByte(230), CByte(0))
+        '
+        btnAdd.BackColor = Color.FromArgb(CByte(3), CByte(116), CByte(213))
+        btnAdd.Cursor = Cursors.Hand
         btnAdd.Dock = DockStyle.Right
         btnAdd.FlatAppearance.BorderSize = 0
         btnAdd.FlatStyle = FlatStyle.Flat
-        btnAdd.Font = New Font("Yu Gothic UI", 12.0F, FontStyle.Bold)
+        btnAdd.Font = New Font("Yu Gothic UI", 10.0F, FontStyle.Bold)
+        btnAdd.ForeColor = Color.White
         btnAdd.Location = New Point(512, 8)
         btnAdd.Name = "btnAdd"
         btnAdd.Size = New Size(56, 40)
         btnAdd.TabIndex = 1
-        btnAdd.Text = "+"
+        btnAdd.Text = "🔍"
         btnAdd.UseVisualStyleBackColor = False
         ' 
         ' headerBar
