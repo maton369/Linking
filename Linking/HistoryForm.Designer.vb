@@ -290,7 +290,10 @@ Partial Public Class HistoryForm
             c.Height = Math.Max(36, footerBar.ClientSize.Height - 12)
             c.Location = New Point(i * btnW, (footerBar.ClientSize.Height - c.Height) \ 2)
             c.FlatStyle = FlatStyle.Flat
-            c.FlatAppearance.BorderSize = 0
+            c.FlatAppearance.BorderSize = 2
+            c.FlatAppearance.BorderColor = Color.FromArgb(3, 116, 213)
+            c.Cursor = Cursors.Hand
+            c.Font = New Font("Yu Gothic UI", 10.0F, FontStyle.Regular)
         Next
     End Sub
 
@@ -564,7 +567,10 @@ Public Module CommonUI
                     b.Size = New Size(btnW, btnH)
                     b.Location = New Point(i * btnW, topOffset)
                     b.FlatStyle = FlatStyle.Flat
-                    b.FlatAppearance.BorderSize = 0
+                    b.FlatAppearance.BorderSize = 2
+                    b.FlatAppearance.BorderColor = Color.FromArgb(3, 116, 213)
+                    b.Cursor = Cursors.Hand
+                    b.Font = New Font("Yu Gothic UI", 10.0F, FontStyle.Regular)
                 Next
             End If
         Catch
@@ -580,14 +586,17 @@ Public Module CommonUI
         If navHome IsNot Nothing Then
             navHome.BackColor = Color.Transparent
             navHome.ForeColor = Color.White
+            AddCommonUINavButtonHoverEffect(navHome, False)
         End If
         If navRooms IsNot Nothing Then
             navRooms.BackColor = Color.Transparent
             navRooms.ForeColor = Color.White
+            AddCommonUINavButtonHoverEffect(navRooms, False)
         End If
         If navFav IsNot Nothing Then
             navFav.BackColor = Color.Transparent
             navFav.ForeColor = Color.White
+            AddCommonUINavButtonHoverEffect(navFav, False)
         End If
 
         Select Case activeTab
@@ -595,16 +604,19 @@ Public Module CommonUI
                 If navHome IsNot Nothing Then
                     navHome.BackColor = Color.FromArgb(255, 230, 0)
                     navHome.ForeColor = Color.Black
+                    AddCommonUINavButtonHoverEffect(navHome, True)
                 End If
             Case "Rooms"
                 If navRooms IsNot Nothing Then
                     navRooms.BackColor = Color.FromArgb(255, 230, 0)
                     navRooms.ForeColor = Color.Black
+                    AddCommonUINavButtonHoverEffect(navRooms, True)
                 End If
             Case "Fav"
                 If navFav IsNot Nothing Then
                     navFav.BackColor = Color.FromArgb(255, 230, 0)
                     navFav.ForeColor = Color.Black
+                    AddCommonUINavButtonHoverEffect(navFav, True)
                 End If
         End Select
 
@@ -657,6 +669,61 @@ Public Module CommonUI
                     f.Show()
                     current.Hide()
                 End Sub
+        End If
+    End Sub
+
+    ' ナビゲーションボタンにホバー効果を追加（CommonUI用）
+    Private Sub AddCommonUINavButtonHoverEffect(btn As Button, isActive As Boolean)
+        If btn Is Nothing Then Return
+
+        ' 既存のハンドラーを削除
+        RemoveHandler btn.MouseEnter, Nothing
+        RemoveHandler btn.MouseLeave, Nothing
+        RemoveHandler btn.MouseDown, Nothing
+        RemoveHandler btn.MouseUp, Nothing
+
+        If isActive Then
+            ' アクティブなボタン（黄色）のホバー効果
+            Dim normalColor As Color = Color.FromArgb(255, 230, 0)
+            Dim hoverColor As Color = Color.FromArgb(255, 210, 0)
+            Dim clickColor As Color = Color.FromArgb(240, 195, 0)
+
+            AddHandler btn.MouseEnter, Sub(sender, e)
+                                           btn.BackColor = hoverColor
+                                       End Sub
+
+            AddHandler btn.MouseLeave, Sub(sender, e)
+                                           btn.BackColor = normalColor
+                                       End Sub
+
+            AddHandler btn.MouseDown, Sub(sender, e)
+                                          btn.BackColor = clickColor
+                                      End Sub
+
+            AddHandler btn.MouseUp, Sub(sender, e)
+                                        btn.BackColor = hoverColor
+                                    End Sub
+        Else
+            ' 非アクティブなボタン（透明）のホバー効果
+            Dim normalColor As Color = Color.Transparent
+            Dim hoverColor As Color = Color.FromArgb(50, 255, 255, 255)
+            Dim clickColor As Color = Color.FromArgb(80, 255, 255, 255)
+
+            AddHandler btn.MouseEnter, Sub(sender, e)
+                                           btn.BackColor = hoverColor
+                                       End Sub
+
+            AddHandler btn.MouseLeave, Sub(sender, e)
+                                           btn.BackColor = normalColor
+                                       End Sub
+
+            AddHandler btn.MouseDown, Sub(sender, e)
+                                          btn.BackColor = clickColor
+                                      End Sub
+
+            AddHandler btn.MouseUp, Sub(sender, e)
+                                        btn.BackColor = hoverColor
+                                    End Sub
         End If
     End Sub
 
