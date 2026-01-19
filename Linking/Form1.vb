@@ -22,6 +22,11 @@ Partial Public Class Form1
             AddHandler bottomNav.Paint, AddressOf bottomNav_Paint
         End If
 
+        ' 検索ボタンにホバー効果を追加
+        If btnAdd IsNot Nothing Then
+            AddSearchButtonHoverEffect()
+        End If
+
         _prev = Nothing
     End Sub
 
@@ -392,5 +397,30 @@ Partial Public Class Form1
         Catch ex As Exception
             Debug.WriteLine($"[PrintFlowRoomsContents] failed: {ex.Message}")
         End Try
+    End Sub
+
+    ' 検索ボタンにホバー効果を追加
+    Private Sub AddSearchButtonHoverEffect()
+        If btnAdd Is Nothing Then Return
+
+        Dim normalColor As Color = Color.FromArgb(3, 116, 213)
+        Dim hoverColor As Color = Color.FromArgb(2, 90, 180)
+        Dim clickColor As Color = Color.FromArgb(1, 70, 150)
+
+        AddHandler btnAdd.MouseEnter, Sub(sender, e)
+                                          btnAdd.BackColor = hoverColor
+                                      End Sub
+
+        AddHandler btnAdd.MouseLeave, Sub(sender, e)
+                                          btnAdd.BackColor = normalColor
+                                      End Sub
+
+        AddHandler btnAdd.MouseDown, Sub(sender, e)
+                                         btnAdd.BackColor = clickColor
+                                     End Sub
+
+        AddHandler btnAdd.MouseUp, Sub(sender, e)
+                                       btnAdd.BackColor = hoverColor
+                                   End Sub
     End Sub
 End Class
