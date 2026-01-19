@@ -81,6 +81,7 @@ Partial Public Class DmForm
         btnBack.TabIndex = 0
         btnBack.Text = "←"
         btnBack.UseVisualStyleBackColor = False
+        btnBack.Cursor = Cursors.Hand
         '
         ' btnStar
         '
@@ -95,6 +96,7 @@ Partial Public Class DmForm
         btnStar.TabIndex = 2
         btnStar.Text = "☆"
         btnStar.UseVisualStyleBackColor = False
+        btnStar.Cursor = Cursors.Hand
         '
         ' lblTitle
         '
@@ -157,6 +159,7 @@ Partial Public Class DmForm
         btnSend.TabIndex = 1
         btnSend.Text = "送信"
         btnSend.UseVisualStyleBackColor = False
+        btnSend.Cursor = Cursors.Hand
         '
         ' footerBar
         '
