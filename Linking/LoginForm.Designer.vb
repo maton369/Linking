@@ -6,6 +6,7 @@ Partial Public Class LoginForm
     Friend WithEvents headerBar As Panel
     Friend WithEvents footerBar As Panel
     Friend WithEvents lblTitle As Label
+    Friend WithEvents lblTestNote As Label
     Friend WithEvents lblEmail As Label
     Friend WithEvents lblPassword As Label
     Friend WithEvents txtEmail As TextBox
@@ -18,6 +19,7 @@ Partial Public Class LoginForm
         headerBar = New Panel()
         footerBar = New Panel()
         lblTitle = New Label()
+        lblTestNote = New Label()
         lblEmail = New Label()
         lblPassword = New Label()
         txtEmail = New TextBox()
@@ -43,9 +45,9 @@ Partial Public Class LoginForm
         footerBar.Name = "footerBar"
         footerBar.Size = New Size(554, 64)
         footerBar.TabIndex = 1
-        ' 
+        '
         ' lblTitle
-        ' 
+        '
         lblTitle.AutoSize = True
         lblTitle.Font = New Font("Yu Gothic UI", 18.0F, FontStyle.Bold)
         lblTitle.Location = New Point(24, 96)
@@ -53,9 +55,20 @@ Partial Public Class LoginForm
         lblTitle.Size = New Size(128, 48)
         lblTitle.TabIndex = 2
         lblTitle.Text = "ログイン"
-        ' 
+        '
+        ' lblTestNote
+        '
+        lblTestNote.AutoSize = True
+        lblTestNote.Font = New Font("Yu Gothic UI", 9.0F, FontStyle.Italic)
+        lblTestNote.ForeColor = Color.FromArgb(CByte(100), CByte(100), CByte(100))
+        lblTestNote.Location = New Point(24, 152)
+        lblTestNote.Name = "lblTestNote"
+        lblTestNote.Size = New Size(380, 24)
+        lblTestNote.TabIndex = 9
+        lblTestNote.Text = "※テスト用：メールアドレスとパスワードは任意の値で構いません"
+        '
         ' lblEmail
-        ' 
+        '
         lblEmail.AutoSize = True
         lblEmail.Location = New Point(24, 200)
         lblEmail.Name = "lblEmail"
@@ -113,6 +126,7 @@ Partial Public Class LoginForm
         Controls.Add(footerBar)
         Controls.Add(headerBar)
         Controls.Add(lblTitle)
+        Controls.Add(lblTestNote)
         Controls.Add(lblEmail)
         Controls.Add(txtEmail)
         Controls.Add(lblPassword)
