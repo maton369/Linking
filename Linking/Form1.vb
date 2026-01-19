@@ -144,13 +144,19 @@ Partial Public Class Form1
 
     Private Function CreateRoomCard(title As String, count As String, time As String) As Panel
         Dim card As New Panel()
-        card.Margin = New Padding(6)
+        card.Margin = New Padding(8)
         card.BackColor = System.Drawing.Color.FromArgb(204, 247, 253)
-        card.Padding = New Padding(12)
+        card.Padding = New Padding(16)
 
         ' 高さ固定、幅は追加時に調整する
         card.Height = 120
         card.Width = 520
+
+        ' ボタンらしい枠線を追加（太めの境界線）
+        card.BorderStyle = BorderStyle.None
+
+        ' カーソルを手の形に変更してクリック可能であることを示す
+        card.Cursor = Cursors.Hand
 
         Dim lbl As New Label()
         lbl.Text = String.Format("{0} — {1} — {2}", title, count, time)
@@ -159,18 +165,77 @@ Partial Public Class Form1
         lbl.TextAlign = ContentAlignment.MiddleLeft
         lbl.ForeColor = Color.Black
         lbl.BackColor = Color.Transparent
+        lbl.Cursor = Cursors.Hand
 
-        lbl.Font = Me.Font
+        lbl.Font = New Font(Me.Font.FontFamily, 10, FontStyle.Regular)
         card.Controls.Add(lbl)
         lbl.BringToFront()
 
         card.Visible = True
         card.PerformLayout()
 
+        ' カスタム描画で太い枠線と角丸を実装
+        AddHandler card.Paint, Sub(sender As Object, e As PaintEventArgs)
+                                   DrawCardBorder(e.Graphics, card)
+                               End Sub
+
+        ' ホバー効果を追加
+        AddHandler card.MouseEnter, Sub(sender As Object, e As EventArgs)
+                                        card.BackColor = System.Drawing.Color.FromArgb(180, 235, 245)
+                                        card.Invalidate()
+                                    End Sub
+
+        AddHandler card.MouseLeave, Sub(sender As Object, e As EventArgs)
+                                        card.BackColor = System.Drawing.Color.FromArgb(204, 247, 253)
+                                        card.Invalidate()
+                                    End Sub
+
+        ' マウスダウン時の視覚的フィードバック
+        AddHandler card.MouseDown, Sub(sender As Object, e As MouseEventArgs)
+                                       card.BackColor = System.Drawing.Color.FromArgb(160, 220, 235)
+                                   End Sub
+
+        AddHandler card.MouseUp, Sub(sender As Object, e As MouseEventArgs)
+                                     card.BackColor = System.Drawing.Color.FromArgb(180, 235, 245)
+                                 End Sub
+
         AddHandler card.Click, Sub(sender, e) OpenDirectMessage(title)
         AddHandler lbl.Click, Sub(sender, e) OpenDirectMessage(title)
         Return card
     End Function
+
+    ' カードの枠線と角丸を描画
+    Private Sub DrawCardBorder(g As Graphics, card As Panel)
+        g.SmoothingMode = SmoothingMode.AntiAlias
+
+        ' 角丸の半径
+        Dim radius As Integer = 12
+
+        ' 枠線の太さ（太くしてボタンらしさを強調）
+        Dim borderWidth As Integer = 3
+
+        ' 枠線の色（濃い青色でコントラストを出す）
+        Dim borderColor As Color = Color.FromArgb(3, 116, 213)
+
+        ' 角丸の矩形パスを作成
+        Using path As New GraphicsPath()
+            Dim rect As New Rectangle(borderWidth \ 2, borderWidth \ 2,
+                                     card.Width - borderWidth,
+                                     card.Height - borderWidth)
+
+            path.AddArc(rect.X, rect.Y, radius * 2, radius * 2, 180, 90)
+            path.AddArc(rect.Right - radius * 2, rect.Y, radius * 2, radius * 2, 270, 90)
+            path.AddArc(rect.Right - radius * 2, rect.Bottom - radius * 2, radius * 2, radius * 2, 0, 90)
+            path.AddArc(rect.X, rect.Bottom - radius * 2, radius * 2, radius * 2, 90, 90)
+            path.CloseFigure()
+
+            ' 太い枠線を描画
+            Using pen As New Pen(borderColor, borderWidth)
+                pen.Alignment = PenAlignment.Inset
+                g.DrawPath(pen, path)
+            End Using
+        End Using
+    End Sub
 
     Private Sub OpenDirectMessage(title As String)
         Dim frm As New DmForm(Me, title & " のDM")
@@ -191,7 +256,7 @@ Partial Public Class Form1
         Try
             flowRooms.Controls.Clear()
 
-            Dim card = CreateRoomCard("満員電車", "32人", "1:00:00")
+            Dim card = CreateRoomCard("卒業研究について", "32人", "1:00:00")
             If card IsNot Nothing Then
                 Dim innerWidth As Integer = Math.Max(0, flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right)
                 If innerWidth > 0 Then
@@ -266,7 +331,7 @@ Partial Public Class Form1
             flowRooms.SuspendLayout()
             flowRooms.Controls.Clear()
 
-            Dim card = CreateRoomCard("満員電車", "32人", "1:00:00")
+            Dim card = CreateRoomCard("卒業研究について", "32人", "1:00:00")
             Dim innerWidth As Integer = Math.Max(0, flowRooms.ClientSize.Width - flowRooms.Padding.Left - flowRooms.Padding.Right)
             If innerWidth > 0 Then
                 card.Width = Math.Max(0, innerWidth - 4)
