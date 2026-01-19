@@ -340,10 +340,14 @@ Partial Public Class HistoryForm
         Dim card As New Panel()
         card.Margin = New Padding(8, 8, 8, 12)
         card.BackColor = Color.FromArgb(204, 247, 253) ' Form1 のカード色に合わせる
-        card.Padding = New Padding(12)
+        card.Padding = New Padding(16)
         card.Height = 80
         card.Width = Math.Max(120, innerWidth)
         card.MinimumSize = New Size(200, 80)
+
+        ' ボタンらしい外観設定
+        card.BorderStyle = BorderStyle.None
+        card.Cursor = Cursors.Hand
 
         Dim lbl As New Label()
         lbl.Text = title
@@ -352,19 +356,70 @@ Partial Public Class HistoryForm
         lbl.Font = New Font("Yu Gothic UI", 11.0F, FontStyle.Regular)
         lbl.ForeColor = Color.Black
         lbl.BackColor = Color.Transparent
+        lbl.Cursor = Cursors.Hand
 
         card.Controls.Add(lbl)
         card.Anchor = AnchorStyles.Left Or AnchorStyles.Right Or AnchorStyles.Top
         card.Visible = True
         card.PerformLayout()
 
-        ApplyRoundedRegion(card, 12)
+        ' カスタム描画で太い枠線を実装
+        AddHandler card.Paint, Sub(sender As Object, e As PaintEventArgs)
+                                   DrawHistoryCardBorder(e.Graphics, card)
+                               End Sub
+
+        ' ホバー効果
+        AddHandler card.MouseEnter, Sub(sender As Object, e As EventArgs)
+                                        card.BackColor = Color.FromArgb(180, 235, 245)
+                                        card.Invalidate()
+                                    End Sub
+
+        AddHandler card.MouseLeave, Sub(sender As Object, e As EventArgs)
+                                        card.BackColor = Color.FromArgb(204, 247, 253)
+                                        card.Invalidate()
+                                    End Sub
+
+        ' マウスダウン時の視覚的フィードバック
+        AddHandler card.MouseDown, Sub(sender As Object, e As MouseEventArgs)
+                                       card.BackColor = Color.FromArgb(160, 220, 235)
+                                   End Sub
+
+        AddHandler card.MouseUp, Sub(sender As Object, e As MouseEventArgs)
+                                     card.BackColor = Color.FromArgb(180, 235, 245)
+                                 End Sub
+
         AddHandler card.Click, Sub(sender, e) OpenConversation(title)
         AddHandler lbl.Click, Sub(sender, e) OpenConversation(title)
 
         Debug.WriteLine($"[CreateHistoryCard] title=""{title}"", targetWidth={innerWidth}, finalWidth={card.Width}, height={card.Height}")
         Return card
     End Function
+
+    ' カードの枠線と角丸を描画
+    Private Sub DrawHistoryCardBorder(g As Graphics, card As Panel)
+        g.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+
+        Dim radius As Integer = 12
+        Dim borderWidth As Integer = 3
+        Dim borderColor As Color = Color.FromArgb(3, 116, 213)
+
+        Using path As New Drawing2D.GraphicsPath()
+            Dim rect As New Rectangle(borderWidth \ 2, borderWidth \ 2,
+                                     card.Width - borderWidth - 1,
+                                     card.Height - borderWidth - 1)
+
+            path.AddArc(rect.X, rect.Y, radius * 2, radius * 2, 180, 90)
+            path.AddArc(rect.Right - radius * 2, rect.Y, radius * 2, radius * 2, 270, 90)
+            path.AddArc(rect.Right - radius * 2, rect.Bottom - radius * 2, radius * 2, radius * 2, 0, 90)
+            path.AddArc(rect.X, rect.Bottom - radius * 2, radius * 2, radius * 2, 90, 90)
+            path.CloseFigure()
+
+            Using pen As New Pen(borderColor, borderWidth)
+                pen.Alignment = Drawing2D.PenAlignment.Inset
+                g.DrawPath(pen, path)
+            End Using
+        End Using
+    End Sub
 
     ' --- データ投入 ---
     Private Sub LoadHistoryCards()
